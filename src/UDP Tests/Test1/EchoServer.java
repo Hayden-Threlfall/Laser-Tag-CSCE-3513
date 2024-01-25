@@ -8,7 +8,7 @@ public class EchoServer extends Thread {
 
     public EchoServer() {
         try {
-            socket = new DatagramSocket(4445);
+            socket = new DatagramSocket(7501);
         }
         catch(Exception e) {
             System.out.print(e);
@@ -35,7 +35,7 @@ public class EchoServer extends Thread {
             packet = new DatagramPacket(buf, buf.length, address, port);
             String received 
               = new String(packet.getData(), 0, packet.getLength());
-            
+            System.out.print(received);
             if (received.equals("end")) {
                 running = false;
                 continue;
@@ -49,5 +49,9 @@ public class EchoServer extends Thread {
             }
         }
         socket.close();
+    }
+    public static void main(String[] args) {
+        EchoServer server=new EchoServer();
+        server.start();
     }
 }
