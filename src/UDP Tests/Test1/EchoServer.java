@@ -35,7 +35,9 @@ public class EchoServer extends Thread {
             packet = new DatagramPacket(buf, buf.length, address, port);
             String received 
               = new String(packet.getData(), 0, packet.getLength());
-            System.out.print(received);
+            System.out.printf("%s", received.replaceAll("null", ""));
+            //System.out.println(packet.getOffset());
+
             if (received.equals("end")) {
                 running = false;
                 continue;
@@ -46,6 +48,7 @@ public class EchoServer extends Thread {
             }
             catch(Exception e) {
                 System.out.print(e);
+                System.out.print("Messed Up");
             }
         }
         socket.close();
