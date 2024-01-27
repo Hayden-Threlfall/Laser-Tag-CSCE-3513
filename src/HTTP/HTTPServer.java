@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
-public class SimpleHttpServer {
+public class HTTPServer {
 
     public static void main(String[] args) throws IOException {
         int serverPort = 8000;
@@ -52,6 +52,7 @@ public class SimpleHttpServer {
         private String processJson(String jsonInput) {
             // You can implement your logic to process the incoming JSON here
             // For simplicity, let's just return the same JSON data as the response
+            System.out.print(jsonInput);
             return jsonInput;
         }
     }
