@@ -28,6 +28,8 @@ public class UDPSend {
             //Sending message
             socket.send(packet);
 
+            socket.close();
+
             System.out.println("Message sent");
         } catch (Exception e) {
             e.printStackTrace();

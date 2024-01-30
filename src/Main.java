@@ -1,6 +1,6 @@
 import UDP.UDPReceive;
 import UDP.UDPSend;
-import HTTP.HTTPServer;
+//import HTTP.HTTPServer;
 
 public class Main {
     public static void main(String[] args) {
@@ -8,17 +8,13 @@ public class Main {
         //UDPSend Message = new UDPSend();
         
         UDPServer.start();
-        while(true){
-
+            for( int i = 0; i < 15; i++){
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e){
+                System.out.print(e);
+            }
+            UDPSend.send("TEST");
         }
-        // try {
-        //     Thread.sleep(1000);
-        // } catch (Exception e){
-        //     System.out.print(e);
-        // }
-        
-        //Message.start();
-
-        //Message.send("TEST");
     }
 }
