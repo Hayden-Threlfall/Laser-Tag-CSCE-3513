@@ -1,16 +1,17 @@
+package UDP;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
-public class UDPServer {
-    public static void main(String[] args) {
-        // Specify the port number to listen on
-        int port = 7501;
+public class UDPReceive extends Thread {
+    private final static int PORT = 7501;
 
+    public static void receive() {
         try {
             // Create a DatagramSocket to listen for UDP packets on the specified port
-            DatagramSocket socket = new DatagramSocket(port);
+            DatagramSocket socket = new DatagramSocket(PORT);
 
-            System.out.println("UDP Server is listening on port " + port);
+            System.out.println("UDP Server is listening on port " + PORT);
 
             while (true) {
                 // Create a buffer to hold incoming data
