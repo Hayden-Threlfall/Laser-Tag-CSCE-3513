@@ -6,7 +6,7 @@ import java.net.InetAddress;
 
 public class UDPSend {
     private final static String ADDRESS = "127.0.0.1";
-    private final static int PORT = 7501;
+    private final static int PORT = 7500;
 
     public static void send(String message) {
         System.out.println("Sending message: " + message);

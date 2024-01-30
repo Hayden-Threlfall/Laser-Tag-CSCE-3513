@@ -3,10 +3,10 @@ package UDP;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
-public class UDPReceive extends Thread {
+public class UDPReceive extends Thread{
     private final static int PORT = 7501;
 
-    public static void receive() {
+    public void run() {
         try {
             // Create a DatagramSocket to listen for UDP packets on the specified port
             DatagramSocket socket = new DatagramSocket(PORT);
