@@ -8,7 +8,7 @@ public class Main {
         
         UDPServer.start();
         
-
+        
         // for( int i = 0; i < 5; i++){
         //     try {
         //         Thread.sleep(1000);
@@ -18,6 +18,6 @@ public class Main {
         //     UDPSend.send("TEST");
         // }
         
-        while (true) {}
+        // while (true) {}
     }
 }
