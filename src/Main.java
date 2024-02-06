@@ -1,5 +1,6 @@
 import UDP.UDPReceive;
 import UDP.UDPSend;
+import DATABASE.Test;
 //import HTTP.HTTPServer;
 
 public class Main {
@@ -8,6 +9,8 @@ public class Main {
         
         UDPServer.start();
         
+        Test.database();
+
         
         // for( int i = 0; i < 5; i++){
         //     try {
