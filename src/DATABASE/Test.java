@@ -21,7 +21,7 @@ public class Test {
 
         props.setProperty("user", "postgres.wiknbxsztzkskarzoxzz");
         props.setProperty("password", env.get("password"));
-        props.setProperty("ssl", "false");
+        props.setProperty("ssl", "true");
 
         try {
             Connection conn = DriverManager.getConnection(url, props);
