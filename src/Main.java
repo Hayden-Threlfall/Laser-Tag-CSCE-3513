@@ -1,11 +1,13 @@
 import UDP.UDPReceive;
 import UDP.UDPSend;
+import UDP.Scoring;
 import DATABASE.Test;
 //import HTTP.HTTPServer;
 
 public class Main {
     public static void main(String[] args) {
-        UDPReceive UDPServer = new UDPReceive();
+        Scoring Scores = new Scoring();
+        UDPReceive UDPServer = new UDPReceive(Scores);
         
         UDPServer.start();
         
