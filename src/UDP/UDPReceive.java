@@ -1,10 +1,16 @@
 package UDP;
 
+import UDP.Scoring;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 public class UDPReceive extends Thread{
     private final static int PORT = 7501;
+    private Scoring Scores;
+
+    public UDPReceive(Scoring s) {
+        Scores = s;
+    }
 
     public void run() {
         try {
@@ -29,8 +35,9 @@ public class UDPReceive extends Thread{
                 String receivedData = new String(packet.getData(), 0, packet.getLength());
 
                 // Display the received data
-                System.out.println("Received UDP packet from " + packet.getAddress() + ":" + packet.getPort());
+                //System.out.println("Received UDP packet from " + packet.getAddress() + ":" + packet.getPort());
                 System.out.println("Data: " + receivedData);
+                Scores.update(receivedData);
             }
 
         } catch (Exception e) {
