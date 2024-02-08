@@ -1,18 +1,20 @@
 //for UDPSend
 package UDP;
-import UDP.UDPSend;
+//import UDP.UDPSend;
 
-//for the Dict
-import java.util.Dictionary;
-import java.util.Enumeration;
+//For the Dict
 import java.util.Hashtable;
-//Arrays.toString();
 import java.util.Arrays;
-import java.io.*;
 
 public class Points {
     //Dict with player ids (which are actually equipment ids) as keys and point values as, well, values
     private Hashtable<Integer, Integer> players = new Hashtable<>();
+
+
+        //UDPSend.send(ID); send out
+        //Scores.green.put(ID, 0); initilaizing
+        //Scores.green.compute(ID, (key, val) -> val+=10);
+
 
     //grabs the ids from the UDP message
     public int[] pullInts(String message){
