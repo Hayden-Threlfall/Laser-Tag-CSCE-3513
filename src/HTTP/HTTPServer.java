@@ -24,6 +24,9 @@ public class HTTPServer {
     public static void main(String[] args) throws IOException {
         int serverPort = 8000;
         HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
+
+        
+
         server.createContext("/api", new MyHandler());
         server.setExecutor(null); // creates a default executor
         server.start();

@@ -1,6 +1,6 @@
 cd src
 
-export CLASSPATH=.:../postgresql-42.7.1.jar
+export CLASSPATH=.:../lib/*
 
 javac Main.java
 
