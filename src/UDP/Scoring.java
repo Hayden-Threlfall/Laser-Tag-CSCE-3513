@@ -1,25 +1,24 @@
-//for UDPSend
 package UDP;
-import UDP.UDPSend;
-
-//For the Dict
+//For the Hashtable
 import java.util.Hashtable;
 import java.util.Arrays;
 
 public class Scoring {
-    //Dict with player ids (which are actually equipment ids) as keys and point values as, well, values
-    public Hashtable<Integer, Integer> players = new Hashtable<>();
+    //Hashtable with player ids (which are actually equipment ids) as keys and point values as values
+    public Hashtable<Integer, Integer> players = new Hashtable<>(); 
+
+        //UDPSend.send(ID); send out
+        //Scores.green.put(ID, 0); initilaizing
+        //Scores.green.compute(ID, (key, val) -> val+=10);
 
 
     //grabs the ids from the UDP message
-    public int[] pullInts(String message){
+    public int[] parseInts(String message){
         int player1 = -1;
         int player2 = -1;
         int[] playerIDs;
 
         //if only one id is sent, send back a UDPSend with their id to indicate friendly fire
-        //<This will have to change - all data received will be in format of id:id 
-        //so to check friendly fire we have to check if IDs are on same team.>
         if(!message.contains(":")){
             UDPSend.send(message);
         } else {
@@ -43,7 +42,7 @@ public class Scoring {
 
         //pulling the ints from the message
         try{
-            int[] playerIDs = this.pullInts(message);
+            int[] playerIDs = this.parseInts(message);
             try{
                 player1 = playerIDs[0];
                 player2 = playerIDs[1];
@@ -51,7 +50,7 @@ public class Scoring {
                 System.out.println("playerIDs array could not be converted to ints");
             }
         } catch (Exception e) {
-            System.out.println("pullInts failed");
+            System.out.println("parseInts failed");
         }
 
         if(!(player1 == -1 && player2 == -1)){
@@ -78,7 +77,7 @@ public class Scoring {
                 default: //one player has hit another
                     System.out.println(players.get(player1)); //test code
                     players.put(player1, players.get(player1) + 10);
-                    UDPSend.send(Integer.toString(player2)); //signal for player that got hit
+                    UDPSend.send(String.valueOf(player2));
                     System.out.println(players.get(player1)); //test code
                 break;
             }
@@ -90,14 +89,14 @@ public class Scoring {
 
 
     public static void main(String[] args) {
-        Scoring points = new Scoring();
+        Scoring events = new Scoring();
 
         // Test 1: Call pullInts with a sample string
         String sampleString = "12:53";
 
         // Test 2: Call update with the result from pullInts
         for(int i = 0; i < 10; i++){
-            points.update(sampleString);
+            events.update(sampleString);
         }
     }
 
