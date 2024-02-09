@@ -45,10 +45,9 @@ public class Main {
         }
         input = "";
         // Insert UDP Start Method //
-        long startTime = System.currentTimeMillis();
-        long endTime = startTime + 36000;
+        long endTime = System.currentTimeMillis() + 36000; 
 
-        while(startTime <= endTime || input != "f5") {
+        while(System.currentTimeMillis() <= endTime || input != "f5") {
             System.out.print("Enter a valid hit UDP message ect: `ID:ID`, `ID:Base_Code`, `ID` (`f5` to quit early)");
             input  = reader.readLine();
             Scores.update(input);
