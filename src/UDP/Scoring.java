@@ -78,7 +78,7 @@ public class Scoring {
                 default: //one player has hit another
                     System.out.println(players.get(player1)); //test code
                     players.put(player1, players.get(player1) + 10);
-                    UDPSend.send(players.get(player2).toString()); //signal for player that got hit
+                    UDPSend.send(Integer.toString(player2)); //signal for player that got hit
                     System.out.println(players.get(player1)); //test code
                 break;
             }
