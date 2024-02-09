@@ -18,6 +18,8 @@ public class Scoring {
         int[] playerIDs;
 
         //if only one id is sent, send back a UDPSend with their id to indicate friendly fire
+        //<This will have to change - all data received will be in format of id:id 
+        //so to check friendly fire we have to check if IDs are on same team.>
         if(!message.contains(":")){
             UDPSend.send(message);
         } else {
@@ -76,6 +78,7 @@ public class Scoring {
                 default: //one player has hit another
                     System.out.println(players.get(player1)); //test code
                     players.put(player1, players.get(player1) + 10);
+                    UDPSend.send(players.get(player2).toString()); //signal for player that got hit
                     System.out.println(players.get(player1)); //test code
                 break;
             }
