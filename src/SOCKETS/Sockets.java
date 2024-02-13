@@ -36,11 +36,30 @@ public class Sockets extends WebSocketServer{
 
     public Sockets(int port, Scoring Scores) throws UnknownHostException {
         super(new InetSocketAddress(port));
-        System.out.println("hello there");
-        scores = Scores;
 
+        //actual values
+        scores = Scores;
         players = new HashMap<>();
-        System.out.println("hi?");
+
+        //testing values
+        scores = new Scoring();
+        players = new HashMap<>();
+
+        scores.players.put(0, 10);
+        players.put(0, new PlayerInfo("A", 1));
+
+        scores.players.put(1, 1092);
+        players.put(1, new PlayerInfo("B", 10));
+
+        scores.players.put(2, 92);
+        players.put(2, new PlayerInfo("C", 13));
+
+        scores.players.put(15, 53);
+        players.put(15, new PlayerInfo("D", 14));
+
+        scores.players.put(16, 84);
+        players.put(16, new PlayerInfo("E", 9));
+
         
     }
 
@@ -78,6 +97,21 @@ public class Sockets extends WebSocketServer{
 
     //message format
     //<command>; <timestamp>; ...
+
+    //score_update; <timestamp>; <name>; <score>
+    public void scoreUpdate(int equipmentID) {
+        Date now = new Date();
+        PlayerInfo playerInfo = players.get(equipmentID);
+        int score = scores.players.get(equipmentID);
+        this.broadcast("score_update; " + now.getTime() + "; " + playerInfo.codeName + "; " + score);
+    }
+
+    //base_capture; <timestamp>; <name>;
+    public void baseCapture(int equipmentID) {
+        Date now = new Date();
+        PlayerInfo playerInfo = players.get(equipmentID);
+        this.broadcast("score_update; " + now.getTime() + "; " + playerInfo.codeName);
+    }
 
     //score_reset; <timestamp>; GREEN; <name1>:<score1>, ... <name_n>:<score_n>; RED; same...
     private void getScores(WebSocket socket, String[] message) {
