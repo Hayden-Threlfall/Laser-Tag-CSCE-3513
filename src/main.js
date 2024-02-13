@@ -41,6 +41,7 @@ const initializeTimer = (interval) => {
             clearInterval(preGameTimer)
             DEBUG_gameTimer()
             acknowledgeGameEnd()
+            // console.log('adsf')
         }
     },100)
 }
@@ -53,6 +54,10 @@ const DEBUG_gameTimer = () => {
 
 // Takes the current team arrays, sorts them, and writes out their contents into the HTML element.
 const displayScore = () => {
+    // Empty current scores.
+    scoreWindowRed.innerHTML = ""
+    scoreWindowGreen.innerHTML = ""
+
     // Sort the scores in each array.
 
     // Iterate through each sorted array, writing their contents to the HTLM selects.
@@ -106,12 +111,12 @@ const acknowledgeBaseCapture = (playerID, newScore) => {
 const acknowledgeScore = (playerID, newScore) => {
     // Iterate through elements in both team arrays looking for desired player, and update their score when found
     RED_TEAM.forEach((element) => {
-        if (element.playerID == playerID) {
+        if (element.id == playerID) {
             element.score = newScore
         }
     })
     GREEN_TEAM.forEach((element) => {
-        if (element.playerID == playerID) {
+        if (element.id == playerID) {
             element.score = newScore
         }
     })
@@ -127,7 +132,7 @@ const acknowledgeGameStart = () => {
 }
 
 // DEBUG: Fills arrays 
-const TEMP_FILL_PLAYER = () => {
+const DEBUG_FILL_PLAYER = () => {
     RED_TEAM.push({username:'John', score:0, id:1})
     RED_TEAM.push({username:'Andrew', score:0, id:2})
     RED_TEAM.push({username:'Sarah', score:0, id:3})
@@ -141,15 +146,29 @@ const TEMP_FILL_PLAYER = () => {
     GREEN_TEAM.push({username:'Keigh', score:0, id:10})
 }
 
+// DEBUG; Tests the various callback functions to make sure they work.
+const DEBUG_CHANGE_SCORES = () => {
+    let randNum = 0
+    let randScore = 0
+    let fillTimer = setInterval(() => {
+        randNum = Math.floor(Math.random() * 11)
+        randScore = Math.floor(Math.random() * 11)
+        // console.log(randNum)
+        // console.log(randScore)
+        acknowledgeScore(randNum, randScore)
+    },500)
+}
+
 const initializeActionScreen = () => {
     // Store the HTML element for the score menu
     scoreWindowRed = document.getElementById("scoreWindowRed")
     scoreWindowGreen = document.getElementById("scoreWindowGreen")
     
-    TEMP_FILL_PLAYER()
+    // DEBUG_FILL_PLAYER()
     displayScore()
     
     initializeTimer(30)
+    // DEBUG_CHANGE_SCORES()
 
     //TEMP: Fills PLAYERS with some fake players and IDs
 }
