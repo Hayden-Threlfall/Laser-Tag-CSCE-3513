@@ -35,4 +35,17 @@ public class UDPSend {
             e.printStackTrace();
         }
     }
+
+    public static void startGame() {
+        send("202");
+    }
+
+    public static void endGame() {
+        for(int i = 0; i < 3; i++)
+            send("221");
+    }
+
+    public static void initiateGear(String gearId) {
+        send(gearId);
+    }
 }
