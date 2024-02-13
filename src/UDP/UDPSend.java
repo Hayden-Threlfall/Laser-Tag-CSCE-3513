@@ -44,4 +44,8 @@ public class UDPSend {
         for(int i = 0; i < 3; i++)
             send("221");
     }
+
+    public static void initiateGear(String gearId) {
+        send(gearId);
+    }
 }
