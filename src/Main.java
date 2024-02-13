@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.io.IOException;
 
-import DATABASE.Test;
+import DATABASE.Database;
 import SOCKETS.Sockets;
 //import HTTP.HTTPServer;
 
@@ -15,10 +15,11 @@ public class Main {
     public static void main(String[] args) throws UnknownHostException,IOException{
         Scoring Scores = new Scoring();
         UDPReceive UDPServer = new UDPReceive(Scores);
+        Database database = new Database();
         
         UDPServer.start();
         
-        Test.database();
+        ;
 
         Sockets socketServer = new Sockets(8001);
 
