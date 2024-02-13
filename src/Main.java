@@ -21,7 +21,16 @@ public class Main {
         Test.database();
 
         Sockets socketServer = new Sockets(8001, Scores);
+        socketServer.start();
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                socketServer.stop();
+            } catch (Exception e) {
+                //throw new Exception(e);
+                System.out.println("Failed to stop server!");
+            }
+        }));
         // while(true){
         //     test(Scores);
         // }
