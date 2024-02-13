@@ -14,9 +14,11 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import UDP.Scoring;
+
 public class Sockets extends WebSocketServer{
 
-    public Sockets(int port) throws UnknownHostException {
+    public Sockets(int port, Scoring Scores) throws UnknownHostException {
         super(new InetSocketAddress(port));
     }
 

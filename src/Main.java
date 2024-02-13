@@ -20,7 +20,7 @@ public class Main {
         
         Test.database();
 
-        Sockets socketServer = new Sockets(8001);
+        Sockets socketServer = new Sockets(8001, Scores);
 
         // while(true){
         //     test(Scores);
@@ -44,7 +44,7 @@ public class Main {
             //Insert Send Data to Communication Layer, should post to postgress and save data to serve //
         }
         input = "";
-        // Insert UDP Start Method //
+        UDPSend.startGame();
         long endTime = System.currentTimeMillis() + 36000; 
 
         while(System.currentTimeMillis() <= endTime || input != "f5") {
@@ -55,7 +55,7 @@ public class Main {
         }
         input = "";
 
-        // Insert UDP End Method //
+        UDPSend.endGame();
 
         while(input != "f5") {
             System.out.print("Type `f5` to reset");
