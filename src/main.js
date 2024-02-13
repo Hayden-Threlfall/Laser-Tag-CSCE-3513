@@ -39,8 +39,8 @@ const initializeTimer = (interval) => {
 
         if(seconds > interval) {
             clearInterval(preGameTimer)
-            DEBUG_gameTimer()
-            acknowledgeGameEnd()
+            // DEBUG_gameTimer()
+            // acknowledgeGameEnd()
             // console.log('adsf')
         }
     },100)
@@ -89,14 +89,14 @@ const acknowledgeGameEnd = () => {
 const acknowledgeBaseCapture = (playerID, newScore) => {
     // Find the player and modify their username with the base change.
     RED_TEAM.forEach((element) => {
-        if (element.playerID == playerID) {
+        if (element.id == playerID) {
             let newUsername = "[B] " + element.username
             element.username = newUsername
             element.score = newScore
         }
     })
     GREEN_TEAM.forEach((element) => {
-        if (element.playerID == playerID) {
+        if (element.id == playerID) {
             let newUsername = "[B] " + element.username
             element.username = newUsername
             element.score = newScore
@@ -169,8 +169,9 @@ const initializeActionScreen = () => {
     
     initializeTimer(30)
     // DEBUG_CHANGE_SCORES()
-
-    //TEMP: Fills PLAYERS with some fake players and IDs
+    // let checkBase = setTimeout(() => {
+    //     acknowledgeBaseCapture(4, 1000)
+    // }, 10000)
 }
 
 acknowledgeGameStart()
