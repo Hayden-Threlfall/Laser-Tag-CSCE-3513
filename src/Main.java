@@ -11,7 +11,7 @@ import DATABASE.Database;
 import SOCKETS.Sockets;
 //import HTTP.HTTPServer;
 
-public class Main {
+public class Main extends Thread{
     public static void main(String[] args) throws UnknownHostException,IOException{
         Scoring Scores = new Scoring();
         UDPReceive UDPServer = new UDPReceive(Scores);
@@ -73,5 +73,33 @@ public class Main {
         }
 
         // Insert Reset Method //
+    }
+
+    public static void run(Scoring Scores){
+        // while(!false) { // Replace false with some sort of bool for starting
+        //     // Backend does nothing here this could be some sort of callback
+        // }
+        try {
+            Thread.sleep(30000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+
+        UDPSend.startGame();
+
+        long endTime = System.currentTimeMillis() + 36000; 
+
+        while(System.currentTimeMillis() <= endTime) {
+            
+        }
+
+        UDPSend.endGame();
+
+        while(!false) { // Replace false with some sort of bool for resting
+            System.out.print("Reseting tables");
+            // Scores.resetTable() // cleares table should be all this does
+            // Send the scoes to communication then sent to the front end
+        }
     }
 }
