@@ -74,7 +74,7 @@ public class Scoring {
                 case 53: //red base captured
                     System.out.println(players.get(player1)); //test code
                     players.put(player1, players.get(player1) + 100);
-                    Socket.update(player1, players.get(player1, -1));
+                    Socket.update(player1, players.get(player1), -1);
                     System.out.println(players.get(player1)); //test code
                 break;
 

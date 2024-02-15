@@ -98,19 +98,19 @@ public class Sockets extends WebSocketServer{
     //message format
     //<command>; <timestamp>; ...
 
-    //score_update; <timestamp>; <name>; <score>
-    public void update(int equipmentID, int score) {
+    //score_update; <timestamp>; <name>; <score>; <player_hit>
+    //or base_capture; <timestamp>; <name>; <score>
+    public void update(int equipmentID, int score, int hitID) {
         Date now = new Date();
         PlayerInfo playerInfo = players.get(equipmentID);
-        //int score = scores.players.get(equipmentID);
-        this.broadcast("score_update; " + now.getTime() + "; " + playerInfo.codeName + "; " + score);
-    }
 
-    //base_capture; <timestamp>; <name>;
-    public void baseCapture(int equipmentID) {
-        Date now = new Date();
-        PlayerInfo playerInfo = players.get(equipmentID);
-        this.broadcast("score_update; " + now.getTime() + "; " + playerInfo.codeName);
+        //base capture
+        if (hitID == -1) {
+            this.broadcast("base_capture; " + now.getTime() + "; " + playerInfo.codeName + "; " + score);
+        } else {
+            PlayerInfo hitInfo = players.get(hitID);
+            this.broadcast("score_update; " + now.getTime() + "; " + playerInfo.codeName + "; " + score + "; " + hitInfo.codeName);
+        }   
     }
 
     //score_reset; <timestamp>; GREEN; <name1>:<score1>, ... <name_n>:<score_n>; RED; same...
