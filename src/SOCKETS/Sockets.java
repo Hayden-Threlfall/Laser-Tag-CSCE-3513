@@ -113,6 +113,23 @@ public class Sockets extends WebSocketServer{
         }   
     }
 
+    //start_game; <timestamp>
+    public void startGame(long startTime) {
+        this.broadcast("start_game; " + startTime);
+    }
+
+    //(recieve)
+    //request_start
+    public void requestStart(WebSocket socket) {
+        this.broadcast("acknowledged");
+    }
+    
+    //end_game; <timestamp>
+    public void end() {
+        Date now = new Date();
+        this.broadcast("end_game; " + now.getTime());
+    }
+
     //score_reset; <timestamp>; GREEN; <name1>:<score1>, ... <name_n>:<score_n>; RED; same...
     private void getScores(WebSocket socket, String[] message) {
         ArrayList<String> green = new ArrayList<>();
@@ -138,6 +155,5 @@ public class Sockets extends WebSocketServer{
         Date now = new Date();
 
         socket.send("score_reset; " + now.getTime() + "; GREEN; " + greenString + "; RED; " + redString);
-        
     }
 }
