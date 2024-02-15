@@ -4,10 +4,14 @@ import SOCKETS.Sockets;
 import java.util.Hashtable;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.ArrayList;
 
 public class Scoring {
     //Hashtable with player ids (which are actually equipment ids) as keys and point values as values
     public Hashtable<Integer, Integer> players = new Hashtable<>();
+    public ArrayList<Integer> green = new ArrayList<Integer>();
+    public ArrayList<Integer> red = new ArrayList<Integer>();
+
     private Sockets Socket = null;
 
     //grabs the ids from the UDP message
@@ -16,15 +20,15 @@ public class Scoring {
         int player2 = -1;
         int[] playerIDs;
 
-        //if only one id is sent, send back a UDPSend with their id to indicate friendly fire
-        if(!message.contains(":")){
-            UDPSend.send(message);
-        } else {
-        //if more than one id is sent, split up the message and pull the ids
-            String[] players = message.split(":");
-            player1 = Integer.parseInt(players[0]);
-            player2 = Integer.parseInt(players[1]);
-        }
+        String[] players = message.split(":");
+        player1 = Integer.parseInt(players[0]);
+        player2 = Integer.parseInt(players[1]);
+
+        //check if players on same team
+        if(green.contains(player1) && green.contains(player2))
+            UDPSend.send(Integer.toString(player1));
+        if(red.contains(player1) && red.contains(player2))
+            UDPSend.send(Integer.toString(player1));
 
         //create playerIDs with the new keyword so playerIDs can be resolved to a variable 
         playerIDs = new int[]{player1, player2};
