@@ -18,11 +18,11 @@ public class Main extends Thread{
         Database database = new Database();
         
         UDPServer.start();
-        
-        ;
 
         Sockets socketServer = new Sockets(8001, Scores);
         socketServer.start();
+
+        Scores.Sockets(socketServer);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {

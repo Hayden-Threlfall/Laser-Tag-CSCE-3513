@@ -1,16 +1,14 @@
 package UDP;
 //For the Hashtable
+import SOCKETS.Sockets;
 import java.util.Hashtable;
+import java.net.Socket;
 import java.util.Arrays;
 
 public class Scoring {
     //Hashtable with player ids (which are actually equipment ids) as keys and point values as values
-    public Hashtable<Integer, Integer> players = new Hashtable<>(); 
-
-        //UDPSend.send(ID); send out
-        //Scores.green.put(ID, 0); initilaizing
-        //Scores.green.compute(ID, (key, val) -> val+=10);
-
+    public Hashtable<Integer, Integer> players = new Hashtable<>();
+    private Sockets Socket = null;
 
     //grabs the ids from the UDP message
     public int[] parseInts(String message){
@@ -34,7 +32,11 @@ public class Scoring {
         System.out.println(Arrays.toString(playerIDs));
         return playerIDs;
     }
-    
+    //Intilizes Socket after initilization in Main
+    public void Sockets(Sockets sockets) {
+        Socket = sockets;
+    }
+
     //this is the method that should 
     public void update(String message) {
         int player1 = -1;
@@ -65,18 +67,21 @@ public class Scoring {
                 case 43: //green base captured
                     System.out.println(players.get(player1)); //test code
                     players.put(player1, players.get(player1) + 100);
+                    Socket.update(player1, players.get(player1));
                     System.out.println(players.get(player1)); //test code
                 break;
 
                 case 53: //red base captured
                     System.out.println(players.get(player1)); //test code
                     players.put(player1, players.get(player1) + 100);
+                    Socket.update(player1, players.get(player1));
                     System.out.println(players.get(player1)); //test code
                 break;
 
                 default: //one player has hit another
                     System.out.println(players.get(player1)); //test code
                     players.put(player1, players.get(player1) + 10);
+                    Socket.update(player1, players.get(player1));
                     UDPSend.send(String.valueOf(player2));
                     System.out.println(players.get(player1)); //test code
                 break;
