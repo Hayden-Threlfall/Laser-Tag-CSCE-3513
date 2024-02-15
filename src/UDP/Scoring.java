@@ -67,21 +67,21 @@ public class Scoring {
                 case 43: //green base captured
                     System.out.println(players.get(player1)); //test code
                     players.put(player1, players.get(player1) + 100);
-                    Socket.update(player1, players.get(player1));
+                    Socket.update(player1, players.get(player1), -1);
                     System.out.println(players.get(player1)); //test code
                 break;
 
                 case 53: //red base captured
                     System.out.println(players.get(player1)); //test code
                     players.put(player1, players.get(player1) + 100);
-                    Socket.update(player1, players.get(player1));
+                    Socket.update(player1, players.get(player1, -1));
                     System.out.println(players.get(player1)); //test code
                 break;
 
                 default: //one player has hit another
                     System.out.println(players.get(player1)); //test code
                     players.put(player1, players.get(player1) + 10);
-                    Socket.update(player1, players.get(player1));
+                    Socket.update(player1, players.get(player1), player2);
                     UDPSend.send(String.valueOf(player2));
                     System.out.println(players.get(player1)); //test code
                 break;
