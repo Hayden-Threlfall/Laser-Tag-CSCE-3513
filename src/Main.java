@@ -79,6 +79,8 @@ public class Main extends Thread{
         // while(!false) { // Replace false with some sort of bool for starting
         //     // Backend does nothing here this could be some sort of callback
         // }
+
+        // 30 second setup timer
         try {
             Thread.sleep(30000);
         } catch (Exception e) {
@@ -96,10 +98,10 @@ public class Main extends Thread{
 
         UDPSend.endGame();
 
-        while(!false) { // Replace false with some sort of bool for resting
-            System.out.print("Reseting tables");
-            // Scores.resetTable() // cleares table should be all this does
-            // Send the scoes to communication then sent to the front end
-        }
+        // while(true){ // Replace false with some sort of bool for resting
+        //     System.err.println();
+        // }
+        System.out.print("Reseting tables");
+        Scores.resetTable(); // cleares table should be all this does
     }
 }
