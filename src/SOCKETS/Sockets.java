@@ -99,10 +99,10 @@ public class Sockets extends WebSocketServer{
     //<command>; <timestamp>; ...
 
     //score_update; <timestamp>; <name>; <score>
-    public void scoreUpdate(int equipmentID) {
+    public void update(int equipmentID, int score) {
         Date now = new Date();
         PlayerInfo playerInfo = players.get(equipmentID);
-        int score = scores.players.get(equipmentID);
+        //int score = scores.players.get(equipmentID);
         this.broadcast("score_update; " + now.getTime() + "; " + playerInfo.codeName + "; " + score);
     }
 
