@@ -12,10 +12,184 @@ let scoreWindowRed
 let scoreWindowGreen
 
 /* FUNCTIONS */
+/* SPLASH SCREEN */
+const splashScreen = () => {
+    let width = 3487
+    let height = 2221
+    let logo = new Image(width, height)
+    logo.src = "logo.jpg"
+
+    document.body.appendChild(logo)
+
+    setTimeout(() => {
+        document.body.removeChild(logo)
+        initializeEntryScreen()
+    },3000)
+}
 
 /* PLAYER SCREEN */
+const initializeEntryScreen = function() {
+    const editScreenDiv = document.createElement("div");
+    editScreenDiv.id = "editScreen";
+
+    // Header
+    const header = document.createElement("h1");
+    header.style.color = "purple";
+    header.style.textAlign = "center";
+    header.textContent = "Player Entry";
+    editScreenDiv.appendChild(header);
+
+    // Chart
+    const chartDiv = document.createElement("div");
+    chartDiv.style.display = "flex";
+    chartDiv.style.justifyContent = "space-around";
+    chartDiv.style.marginTop = "20px";
+
+    const redTeamDiv = createTeamDiv("Red Team");
+    const greenTeamDiv = createTeamDiv("Green Team");
+
+    chartDiv.appendChild(redTeamDiv);
+    chartDiv.appendChild(greenTeamDiv);
+
+    editScreenDiv.appendChild(chartDiv);
+
+    // Buttons
+    const buttonsDiv = document.createElement("div");
+    buttonsDiv.style.display = "flex";
+    buttonsDiv.style.justifyContent = "space-around";
+    buttonsDiv.style.marginTop = "20px";
+
+    const buttonLabels = [
+        "F1 Edit Game",
+        "F2 Game Parameters",
+        "F3 Start Game",
+        "F5 PreEntered Games",
+        "F7",
+        "F8 View Game",
+        "F10 Flick Sync",
+        "F12 Clear Game"
+    ];
+
+    buttonLabels.forEach(label => {
+        const button = document.createElement("button");
+        button.textContent = label;
+        buttonsDiv.appendChild(button);
+    });
+
+    editScreenDiv.appendChild(buttonsDiv);
+
+    document.body.appendChild(editScreenDiv);
+
+    // Event listeners
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "3") {
+            document.getElementById("editScreen").style.display = "none";
+            acknowledgeGameStart();
+        } else if (event.key === "1") {
+            document.getElementById("editScreen").style.display = "block";
+            document.getElementById("actionScreen").remove();
+        } else if (event.key === "Delete") {
+            // Clear selected entry
+            clearSelectedEntry();
+        } else if (event.key === "0") {
+            // Clear all entries
+            clearAllEntries();
+        }
+    });
+};
+
+const createTeamDiv = function(teamName) {
+    const teamDiv = document.createElement("div");
+    teamDiv.style.backgroundColor = teamName === "Red Team" ? "darkred" : "darkgreen";
+    teamDiv.style.width = "45%";
+    teamDiv.style.padding = "10px";
+
+    // Header
+    const header = document.createElement("h2");
+    header.style.color = "white";
+    header.textContent = teamName;
+    teamDiv.appendChild(header);
+
+    // Entries
+    const entriesDiv = document.createElement("div");
+
+    for (let i = 1; i <= 15; i++) {
+        const entryRow = document.createElement("div");
+        entryRow.style.display = "flex";
+        entryRow.style.marginTop = "5px";
+
+        // Number label
+        const numberLabel = document.createElement("div");
+        numberLabel.textContent = i;
+        entryRow.appendChild(numberLabel);
+
+        // Player ID input
+        const playerIdInput = document.createElement("input");
+        playerIdInput.type = "text";
+        playerIdInput.maxLength = 5;
+        playerIdInput.style.marginRight = "10px";
+        entryRow.appendChild(playerIdInput);
+
+        // Player code input
+        const playerCodeInput = document.createElement("input");
+        playerCodeInput.type = "text";
+        playerCodeInput.maxLength = 10;
+        entryRow.appendChild(playerCodeInput);
+
+        entriesDiv.appendChild(entryRow);
+    }
+
+    teamDiv.appendChild(entriesDiv);
+
+    return teamDiv;
+};
+
+const clearSelectedEntry = function() {
+    const selectedEntry = document.querySelector(".selected");
+    if (selectedEntry) {
+        selectedEntry.querySelector("input[type='text']").value = "";
+    }
+};
+
+const clearAllEntries = function() {
+    const allInputs = document.querySelectorAll("#editScreen input[type='text']");
+    allInputs.forEach(input => {
+        input.value = "";
+    });
+};
+
 
 /* ACTION SCREEN */
+const initializeActionScreen = () => {
+    let body = []
+    body.push(`
+    <div id="timerParent" style="text-align:center;">
+        <pr id="timer"></pr>
+    </div>
+    <br><br>
+    <div style="text-align:center;">
+        <select id="scoreWindowRed" size="8" style="float:left; width:500px"></select>
+        <select id="scoreWindowGreen" size="8"  style="float:right; width:500px"></select>
+    </div>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <button id="returnButton" style="display:none">Back to input screen</button>`)
+
+    document.body.innerHTML = body.join('')
+
+    // Store the HTML element for the score menu
+    scoreWindowRed = document.getElementById("scoreWindowRed")
+    scoreWindowGreen = document.getElementById("scoreWindowGreen")
+    
+    DEBUG_FILL_PLAYER()
+    displayScore()
+    
+    initializeTimer(30)
+    DEBUG_CHANGE_SCORES()
+    let checkBase = setTimeout(() => {
+        acknowledgeBaseCapture(4, 1000)
+    }, 10000)
+}
+
 // Initializes a timer. Input is the length of the timer in seconds.
 const initializeTimer = (interval) => {
     //Insert HTML
@@ -159,19 +333,4 @@ const DEBUG_CHANGE_SCORES = () => {
     },500)
 }
 
-const initializeActionScreen = () => {
-    // Store the HTML element for the score menu
-    scoreWindowRed = document.getElementById("scoreWindowRed")
-    scoreWindowGreen = document.getElementById("scoreWindowGreen")
-    
-    DEBUG_FILL_PLAYER()
-    displayScore()
-    
-    initializeTimer(30)
-    DEBUG_CHANGE_SCORES()
-    let checkBase = setTimeout(() => {
-        acknowledgeBaseCapture(4, 1000)
-    }, 10000)
-}
-
-acknowledgeGameStart()
+splashScreen()
