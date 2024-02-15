@@ -92,7 +92,10 @@ public class Scoring {
         }
     }
 
-
+    public void resetTable() {
+        players.clear();
+    }
+    
     public static void main(String[] args) {
         Scoring events = new Scoring();
 
