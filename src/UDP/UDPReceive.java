@@ -20,6 +20,8 @@ public class UDPReceive extends Thread{
             System.out.println("UDP Server is listening on port " + PORT);
 
             while (true) {
+                // Sleeps thread until allowed
+                sleep();
                 // Create a buffer to hold incoming data
                 byte[] buffer = new byte[1024];
 
@@ -42,6 +44,28 @@ public class UDPReceive extends Thread{
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    private static boolean receive = false;
+
+    public synchronized static void allowRecieve() {
+        receive = true;
+    }
+
+    public synchronized static void blockRecieve() {
+        receive = false;
+    }
+
+    private synchronized void sleep() {
+
+        while (!receive) {
+
+            try {
+                this.wait();
+
+            } catch (InterruptedException ignore) {
+                // log.debug("interrupted: " + ignore.getMessage());
+            }
         }
     }
 }
