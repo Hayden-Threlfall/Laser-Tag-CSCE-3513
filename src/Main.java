@@ -19,7 +19,7 @@ public class Main extends Thread{
         UDPReceive UDPServer = new UDPReceive(Scores);
         UDPServer.start();
 
-        Sockets socketServer = new Sockets(8001, Scores);
+        Sockets socketServer = new Sockets(8001, Scores, database);
         socketServer.start();
 
         Scores.Sockets(socketServer);

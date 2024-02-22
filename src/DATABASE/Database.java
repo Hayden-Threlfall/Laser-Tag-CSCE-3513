@@ -45,8 +45,10 @@ public class Database {
             //retrieve highest id and get next
             int id = 0;
             while (rs.next()) {
+                System.out.println("loop id: " + id);
                 id = rs.getInt("id");
             }
+            System.out.println("id: " + id);
             id++;
             currID = id;
             
@@ -96,6 +98,7 @@ public class Database {
             currID++;
 
             System.out.println("Player added!");
+            return currID-1;
             
         } catch(SQLException e) {
             errorBlock(e);

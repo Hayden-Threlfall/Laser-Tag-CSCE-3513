@@ -18,6 +18,7 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import DATABASE.Database;
 import UDP.Scoring;
 
 
@@ -32,17 +33,20 @@ public class Sockets extends WebSocketServer{
     }
 
     private Scoring scores;
+    private Database database;
     private HashMap<Integer, PlayerInfo> players;
 
-    public Sockets(int port, Scoring Scores) throws UnknownHostException {
+    public Sockets(int port, Scoring scores, Database database) throws UnknownHostException {
         super(new InetSocketAddress(port));
 
         //actual values
-        scores = Scores;
+        this.scores = scores;
         players = new HashMap<>();
+        this.database = database;
+
 
         //testing values
-        scores = new Scoring();
+        /*scores = new Scoring();
         players = new HashMap<>();
 
         scores.players.put(0, 10);
@@ -58,7 +62,7 @@ public class Sockets extends WebSocketServer{
         players.put(15, new PlayerInfo("D", 14));
 
         scores.players.put(16, 84);
-        players.put(16, new PlayerInfo("E", 9));
+        players.put(16, new PlayerInfo("E", 9));*/
 
         
         
@@ -92,7 +96,7 @@ public class Sockets extends WebSocketServer{
                 this.getScores(socket, messageParts);
                 break;
             case "add_player_id":
-                this.addPlayeByID(socket, messageParts);
+                this.addPlayerByID(socket, messageParts);
                 break;
             case "add_player_name":
                 this.addPlayerByName(socket, messageParts);
@@ -148,7 +152,7 @@ public class Sockets extends WebSocketServer{
 
             String entry = playerInfo.codeName + ":" + score;
             //green
-            if (key < 15) {
+            if (key % 2 == 0) {
                 green.add(entry);
             } else {
                 red.add(entry);
@@ -165,13 +169,27 @@ public class Sockets extends WebSocketServer{
     }
 
     //add_player_id; <request_id>; <equipmentID>; <playerID>
-    //<success/fail>; optional<failure_message>
-    private void addPlayeByID(WebSocket socket, String[] message) {
+    //<success/fail>; result<player_name, failure_message>
+    private void addPlayerByID(WebSocket socket, String[] message) {
         int equipmentID = Integer.parseInt(message[2].trim());
         int playerID = Integer.parseInt(message[3].trim());
         //do something
 
-        this.sendResponse(socket, message[1], "fail; not setup yet");
+        String name = database.searchPlayer(playerID);
+
+
+        //System.out.println("Found id: " + name);
+        
+        //this.sendResponse(socket, message[1], "fail; not setup yet");
+
+        if (name == "NOT FOUND") {
+            this.sendResponse(socket, message[1], "Couldn't find that id in the database");
+        } else {
+            this.scores.players.put(equipmentID, 0);
+            this.players.put(equipmentID, new PlayerInfo(name, playerID));
+
+            this.sendResponse(socket, message[1], "success; " + name);
+        }
     }
 
 
@@ -182,7 +200,15 @@ public class Sockets extends WebSocketServer{
         String playerName = message[3].trim();
         //do something
 
-        this.sendResponse(socket, message[1], "fail; not setup yet");
+        int id = database.addPlayer(playerName);
+        
+        //System.out.println("added player: " + id);
+        //this.sendResponse(socket, message[1], "fail; not setup yet");
+
+        this.scores.players.put(equipmentID, 0);
+        this.players.put(equipmentID, new PlayerInfo(playerName, id));
+
+        this.sendResponse(socket, message[1], "success; " + id);
     }
 
 
