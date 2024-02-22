@@ -430,23 +430,28 @@ async function getScores() {
     let scores = await sendRequest("get_scores", "");
 
     let green_scores = {};
-    for (var player of scores[2].split(",")) {
-        let parts = player.split(":");
-        let name = parts[0].trim();
-        let score = Number(parts[1].trim());
-
-        green_scores[name] = score;
+    if (scores[2].trim() != "") {
+        for (var player of scores[2].split(",")) {
+            let parts = player.split(":");
+            let name = parts[0].trim();
+            let score = Number(parts[1].trim());
+    
+            green_scores[name] = score;
+        }
     }
 
     let red_scores = {};
-    for (var player of scores[4].split(",")) {
-        let parts = player.split(":");
-        let name = parts[0].trim();
-        let score = Number(parts[1].trim());
 
-        red_scores[name] = score;
+    if (scores[4].trim() != "") {
+        for (var player of scores[4].split(",")) {
+            let parts = player.split(":");
+            let name = parts[0].trim();
+            let score = Number(parts[1].trim());
+    
+            red_scores[name] = score;
+        }
     }
-
+    
     return {
         green_scores: green_scores,
         red_scores: red_scores,
