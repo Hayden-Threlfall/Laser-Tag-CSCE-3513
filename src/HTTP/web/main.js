@@ -478,17 +478,6 @@ async function sendPlayerEntryByName(equipmentID, playerCodeName) {
     }
 }
 
-//request_start;
-//<success/fail>; result<start_time, failure_message>
-async function requestStart() {
-    let result = await sendRequest("request_start");
-
-    if (result[0].trim() == "fail") {
-        throw new Error(result[1].trim());
-    } else {
-        return Number(result[1]);
-    }
-}
 
 SOCKET.onopen = async () => {
     switch (await getStatus()) {
