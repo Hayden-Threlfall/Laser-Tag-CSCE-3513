@@ -16,8 +16,11 @@ let scoreWindowGreen
 const splashScreen = () => {
     let width = 3487
     let height = 2221
-    let logo = new Image(width, height)
+    let logo = new Image()
     logo.src = "https://github.com/jstrother123/photon-main/blob/main/logo.jpg?raw=true"
+    logo.style.height = "100%"
+    logo.style.width = "100%"
+    logo.style.objectFit = "cover"
 
     document.body.appendChild(logo)
 
@@ -29,6 +32,9 @@ const splashScreen = () => {
 
 /* PLAYER SCREEN */
 const initializeEntryScreen = function() {
+    let body = []
+    body.push('<br>')
+    document.body.innerHTML = body.join('')
     const editScreenDiv = document.createElement("div");
     editScreenDiv.id = "editScreen";
 
@@ -172,7 +178,7 @@ const initializeActionScreen = () => {
         <select id="scoreWindowGreen" size="8"  style="float:right; width:500px"></select>
     </div>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <button id="returnButton" style="display:none">Back to input screen</button>`)
+    <button id="returnButton" onclick="initializeEntryScreen()" style="display:none">Back to input screen</button>`)
 
     document.body.innerHTML = body.join('')
 
@@ -183,7 +189,7 @@ const initializeActionScreen = () => {
     DEBUG_FILL_PLAYER()
     displayScore()
     
-    initializeTimer(30)
+    initializeTimer(30, acknowledgeGameEnd)
     DEBUG_CHANGE_SCORES()
     let checkBase = setTimeout(() => {
         acknowledgeBaseCapture(4, 1000)
@@ -191,9 +197,7 @@ const initializeActionScreen = () => {
 }
 
 // Initializes a timer. Input is the length of the timer in seconds.
-const initializeTimer = (interval) => {
-    //Insert HTML
-    //Idea: Use a <pr> and write timer to it
+const initializeTimer = (interval, func) => {
 
     //Track current time for timer.
     let start = Date.now()
@@ -218,6 +222,10 @@ const initializeTimer = (interval) => {
             // console.log('adsf')
         }
     },100)
+
+    let funcCall = setTimeout(() => {
+        func()
+    },interval*1000)
 }
 
 //DEBUG: Displays when timer runs out.
@@ -334,6 +342,7 @@ const DEBUG_CHANGE_SCORES = () => {
 }
 
 
+/* BACKEND CONNECTION */
 //connect to websocket API
 const SOCKET = new WebSocket("ws://localhost:8001");
 
