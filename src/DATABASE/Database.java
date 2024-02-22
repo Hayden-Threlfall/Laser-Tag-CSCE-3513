@@ -63,13 +63,22 @@ public class Database {
     public void addPlayer(int playerID, String playerName) {
         //insert player into database, return their ID to the front end
         try {
-            Connection conn = DriverManager.getConnection(url, props);
             String sql = "insert into players values("+ playerID + ", '"+ playerName + "')";
             Statement statement = conn.createStatement();
             statement.executeUpdate(sql);
             System.out.println("Player added!");
             
         } catch(SQLException e) {
+            System.out.println(e.getSQLState());
+            System.out.println(e);
+        }
+    }
+
+    public void close() {
+        try {
+            conn.close();
+        }
+        catch(SQLException e) {
             System.out.println(e.getSQLState());
             System.out.println(e);
         }
