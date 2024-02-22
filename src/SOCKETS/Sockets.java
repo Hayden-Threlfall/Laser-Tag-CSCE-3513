@@ -183,7 +183,7 @@ public class Sockets extends WebSocketServer{
         //this.sendResponse(socket, message[1], "fail; not setup yet");
 
         if (name == "NOT FOUND") {
-            this.sendResponse(socket, message[1], "Couldn't find that id in the database");
+            this.sendResponse(socket, message[1], "missing_id");
         } else {
             this.scores.players.put(equipmentID, 0);
             this.players.put(equipmentID, new PlayerInfo(name, playerID));
@@ -193,22 +193,23 @@ public class Sockets extends WebSocketServer{
     }
 
 
-    //add_player_id; <request_id>; <equipmentID>; <playerName>
-    //<success/fail>; result<player_id, failure_message>
+    //add_player_id; <request_id>; <equipmentID>; <player_id>; <playerName>
+    //<success/fail>; optional<failure_message>
     private void addPlayerByName(WebSocket socket, String[] message) {
         int equipmentID = Integer.parseInt(message[2].trim());
-        String playerName = message[3].trim();
+        int playerID = Integer.parseInt(message[3].trim());
+        String playerName = message[4].trim();
         //do something
 
-        int id = database.addPlayer(playerName);
+        database.addPlayer(playerID, playerName);
         
         //System.out.println("added player: " + id);
         //this.sendResponse(socket, message[1], "fail; not setup yet");
 
         this.scores.players.put(equipmentID, 0);
-        this.players.put(equipmentID, new PlayerInfo(playerName, id));
+        this.players.put(equipmentID, new PlayerInfo(playerName, playerID));
 
-        this.sendResponse(socket, message[1], "success; " + id);
+        this.sendResponse(socket, message[1], "success");
     }
 
 

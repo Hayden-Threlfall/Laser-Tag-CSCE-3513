@@ -480,15 +480,13 @@ async function sendPlayerEntryById(equipmentID, playerID) {
 
 }
 
-//add_player_name; <equipmentID>; <playerID>
+//add_player_name; <equipmentID>; <playerID>; <playerName>
 //<success/fail>; result<player_id, failure_message>
-async function sendPlayerEntryByName(equipmentID, playerCodeName) {
-    let result = await sendRequest("add_player_name", equipmentID + "; " + playerCodeName);
+async function sendPlayerEntryByName(equipmentID, playerID, playerCodeName) {
+    let result = await sendRequest("add_player_name", equipmentID + "; " + + playerID + "; " + playerCodeName);
 
     if (result[0].trim() == "fail") {
         throw new Error(result[1].trim());
-    } else {
-        return Number(result[1]);
     }
 }
 
