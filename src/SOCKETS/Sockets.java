@@ -78,11 +78,24 @@ public class Sockets extends WebSocketServer{
     public void onMessage(WebSocket socket, String message) {
         System.out.println("message: " + message);
         String[] messageParts = message.split(";");
-        System.out.println("request: " + messageParts[0]);
+        System.out.println("request: " + messageParts[0].toLowerCase());
+        
         switch (messageParts[0].toLowerCase()) {
             case "get_scores":
                 this.getScores(socket, messageParts);
                 break;
+            case "get_status":
+                this.getStatus(socket, messageParts);
+                break;
+            case "add_player_id":
+                this.addPlayeByID(socket, messageParts);
+                break;
+            case "add_player_name":
+                this.addPlayerByName(socket, messageParts);
+                break;
+            default:
+                //socket.send("RESPONSE; " + messageParts[1] + "; UNKNOWN_REQUEST");
+                this.sendResponse(socket, messageParts[1], "unknown request");
         }
     }
 
@@ -97,6 +110,19 @@ public class Sockets extends WebSocketServer{
 
     //message format
     //<command>; <timestamp>; ...
+
+    //responses:
+
+    //get_status;
+    //returns:
+    //  response; <status>
+    //where status = waiting_for_start, in_play, or game_over
+    public void getStatus(WebSocket socket, String[] message) {
+        this.sendResponse(socket, message[1], "waiting_for_start");
+        //socket.send("RESPONSE; " + message[1] + "; waiting_for_start");
+    }
+
+    //events:
 
     //score_update; <timestamp>; <name>; <score>; <player_hit>
     //or base_capture; <timestamp>; <name>; <score>
@@ -130,7 +156,12 @@ public class Sockets extends WebSocketServer{
         this.broadcast("end_game; " + now.getTime());
     }
 
-    //score_reset; <timestamp>; GREEN; <name1>:<score1>, ... <name_n>:<score_n>; RED; same...
+    private void sendResponse(WebSocket socket, String id, String message) {
+        socket.send("response; " + id + "; " + message);
+    }
+
+    //get_scores; <request_id>
+    //response; <request_id>; <timestamp>; GREEN; <name1>:<score1>, ... <name_n>:<score_n>; RED; same...
     private void getScores(WebSocket socket, String[] message) {
         ArrayList<String> green = new ArrayList<>();
         ArrayList<String> red = new ArrayList<>();
@@ -154,6 +185,28 @@ public class Sockets extends WebSocketServer{
 
         Date now = new Date();
 
-        socket.send("score_reset; " + now.getTime() + "; GREEN; " + greenString + "; RED; " + redString);
+        this.sendResponse(socket, message[1], now.getTime() + "; GREEN; " + greenString + "; RED; " + redString);
+        //socket.send("response; " + message[1] + "; " + );
+    }
+
+    //add_player_id; <request_id>; <equipmentID>; <playerID>
+    //<success/fail>; optional<failure_message>
+    private void addPlayeByID(WebSocket socket, String[] message) {
+        int equipmentID = Integer.parseInt(message[2].trim());
+        int playerID = Integer.parseInt(message[3].trim());
+        //do something
+
+        this.sendResponse(socket, message[1], "fail; not setup yet");
+    }
+
+
+    //add_player_id; <request_id>; <equipmentID>; <playerName>
+    //<success/fail>; result<player_id, failure_message>
+    private void addPlayerByName(WebSocket socket, String[] message) {
+        int equipmentID = Integer.parseInt(message[2].trim());
+        String playerName = message[3].trim();
+        //do something
+
+        this.sendResponse(socket, message[1], "fail; not setup yet");
     }
 }

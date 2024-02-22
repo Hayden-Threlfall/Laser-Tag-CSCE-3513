@@ -5,6 +5,7 @@ import UDP.Scoring;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 import java.io.IOException;
 
 import DATABASE.Database;
@@ -23,14 +24,33 @@ public class Main extends Thread{
 
         Scores.Sockets(socketServer);
 
+        Scanner inp = new Scanner(System.in);
+
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                socketServer.stop();
+                socketServer.stop(1000);
+                inp.close();
             } catch (Exception e) {
                 //throw new Exception(e);
                 System.out.println("Failed to stop server!");
             }
         }));
+
+        
+
+        
+        System.out.println("enter close to exit");
+
+        while (true) {
+            String inp_str = inp.nextLine();
+
+            if (inp_str.equals("close")) {
+                
+                socketServer.stop(1000);
+                inp.close();
+                System.exit(1);
+            }
+        }
         
 
     }

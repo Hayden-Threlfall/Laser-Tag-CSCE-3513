@@ -17,7 +17,7 @@ const splashScreen = () => {
     let width = 3487
     let height = 2221
     let logo = new Image(width, height)
-    logo.src = "logo.jpg"
+    logo.src = "https://github.com/jstrother123/photon-main/blob/main/logo.jpg?raw=true"
 
     document.body.appendChild(logo)
 
@@ -333,4 +333,117 @@ const DEBUG_CHANGE_SCORES = () => {
     },500)
 }
 
-splashScreen()
+
+//connect to websocket API
+const SOCKET = new WebSocket("ws://localhost:8001");
+
+SOCKET.onmessage = messageHandler;
+
+let nextID = 0;
+let requests = {};
+
+//two main types of messages recieved
+//response and event
+//response is formated as: RESPONSE; <id>; <data...>
+//event is just: <event>; <timestamp>; <data...>
+function messageHandler(msg) {
+    //lastMessage = msg;
+    msgParts = msg.data.split(";");
+    switch (msgParts[0].toLowerCase()) {
+        case "response":
+            requests[msgParts[1].trim()](msgParts);
+            delete requests[msgParts[1].trim()];
+            break;
+    }
+    console.log("new message: " + msg.data);
+}
+
+//request is what is wanted (like get_status)
+//msg is a string of the paremeters (must be seperate)
+function sendRequest(request, msg) {
+    return new Promise((resolve, reject) => {
+        requests[nextID] = (msg) => {
+            resolve(msg.slice(2));
+        };
+        SOCKET.send(request + "; " + nextID + "; " + msg);
+        nextID += 1;
+    })
+}
+
+async function getStatus() {
+    let status = await sendRequest("get_status","");
+    return status[0].trim();
+}
+
+//get_scores
+//<timestamp>; GREEN; <name1>:<score1>, ... <name_n>:<score_n>; RED; same...
+async function getScores() {
+    let scores = await sendRequest("get_scores", "");
+
+    let green_scores = {};
+    for (var player of scores[2].split(",")) {
+        let parts = player.split(":");
+        let name = parts[0].trim();
+        let score = Number(parts[1].trim());
+
+        green_scores[name] = score;
+    }
+
+    let red_scores = {};
+    for (var player of scores[4].split(",")) {
+        let parts = player.split(":");
+        let name = parts[0].trim();
+        let score = Number(parts[1].trim());
+
+        red_scores[name] = score;
+    }
+
+    return {
+        green_scores: green_scores,
+        red_scores: red_scores,
+        timestamp: Number(scores[0])
+    };
+}
+
+
+//add_player_id; <equipmentID>; <playerID>
+//<success/fail>; optional<failure_message>
+async function sendPlayerEntryById(equipmentID, playerID) {
+    let result = await sendRequest("add_player_id", equipmentID + "; " + playerID);
+
+    if (result[0].trim() == "fail") {
+        throw new Error(result[1].trim());
+    }
+
+}
+
+//add_player_name; <equipmentID>; <playerID>
+//<success/fail>; result<player_id, failure_message>
+async function sendPlayerEntryByName(equipmentID, playerCodeName) {
+    let result = await sendRequest("add_player_name", equipmentID + "; " + playerCodeName);
+
+    if (result[0].trim() == "fail") {
+        throw new Error(result[1].trim());
+    } else {
+        return Number(result[1]);
+    }
+}
+
+
+SOCKET.onopen = async () => {
+    switch (await getStatus()) {
+        case "waiting_for_start":
+            splashScreen()
+            //waiting for start
+            break;
+        case "in_play":
+            break;
+        case "game_over":
+            break;
+    }
+}
+
+
+
+
+//splashScreen()

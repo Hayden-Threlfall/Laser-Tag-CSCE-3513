@@ -28,10 +28,8 @@ public class HTTPServer {
         
 
         server.createContext("/api", new MyHandler());
-        server.setExecutor(null); // creates a default executor
-        server.start();
-        System.out.println("Server started on port " + serverPort);
-
+        
+         
         //get all files within the web directory
         File[] files = (new File(WEB_DIR)).listFiles();
         //convert the array of files into a queue
@@ -56,14 +54,23 @@ public class HTTPServer {
                 //create the context at the path
                 server.createContext(path, handler);
 
+                //System.out.println("Path: " + path);
+
                 //if it's index.html, also bind it to / so you don't need /index.html
-                if (file.getName().equals("index.html")) {
+                /*if (file.getName().equals("index.html")) {
                     String rootPath = path.substring(0, path.length() - "index.html".length());
                     System.out.println("root path: " + rootPath);
                     server.createContext(rootPath, handler);
-                }
+                    System.out.println("Root Path: " + rootPath);
+
+                }*/
             }
         }
+
+        //server.createContext("/index.html");
+        server.setExecutor(null); // creates a default executor
+        server.start();
+        System.out.println("Server started on port " + serverPort);
     }
 
     
@@ -76,6 +83,7 @@ public class HTTPServer {
             put("css", "text/css");
             put("js", "text/javascript");
             put("ico", "image/vnd.microsoft.icon");
+            put("jpg", "image/jpeg");
         }};
         //string of file data
         private final String data;
@@ -119,6 +127,7 @@ public class HTTPServer {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
+            
             //if it failed, just return 404 (should probably return better error message)
             if (this.failed) {
                 exchange.sendResponseHeaders(404, -1);
