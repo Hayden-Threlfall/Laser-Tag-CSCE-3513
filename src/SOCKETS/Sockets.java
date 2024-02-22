@@ -61,6 +61,7 @@ public class Sockets extends WebSocketServer{
         players.put(16, new PlayerInfo("E", 9));
 
         
+        
     }
 
     HashSet<WebSocket> connections = new HashSet<>();
@@ -81,11 +82,14 @@ public class Sockets extends WebSocketServer{
         System.out.println("request: " + messageParts[0].toLowerCase());
         
         switch (messageParts[0].toLowerCase()) {
-            case "get_scores":
-                this.getScores(socket, messageParts);
-                break;
             case "get_status":
                 this.getStatus(socket, messageParts);
+                break;
+            case "request_start":
+                this.requestStart(socket, messageParts);
+                break;
+            case "get_scores":
+                this.getScores(socket, messageParts);
                 break;
             case "add_player_id":
                 this.addPlayeByID(socket, messageParts);
@@ -108,10 +112,10 @@ public class Sockets extends WebSocketServer{
         System.out.println("Started connection!");
     }
 
-    //message format
-    //<command>; <timestamp>; ...
 
-    //responses:
+    private void sendResponse(WebSocket socket, String id, String message) {
+        socket.send("response; " + id + "; " + message);
+    }
 
     //get_status;
     //returns:
@@ -122,42 +126,13 @@ public class Sockets extends WebSocketServer{
         //socket.send("RESPONSE; " + message[1] + "; waiting_for_start");
     }
 
-    //events:
-
-    //score_update; <timestamp>; <name>; <score>; <player_hit>
-    //or base_capture; <timestamp>; <name>; <score>
-    public void update(int equipmentID, int score, int hitID) {
-        Date now = new Date();
-        PlayerInfo playerInfo = players.get(equipmentID);
-
-        //base capture
-        if (hitID == -1) {
-            this.broadcast("base_capture; " + now.getTime() + "; " + playerInfo.codeName + "; " + score);
-        } else {
-            PlayerInfo hitInfo = players.get(hitID);
-            this.broadcast("score_update; " + now.getTime() + "; " + playerInfo.codeName + "; " + score + "; " + hitInfo.codeName);
-        }   
-    }
-
-    //start_game; <timestamp>
-    public void startGame(long startTime) {
-        this.broadcast("start_game; " + startTime);
-    }
-
     //(recieve)
-    //request_start
-    public void requestStart(WebSocket socket) {
-        this.broadcast("acknowledged");
-    }
-    
-    //end_game; <timestamp>
-    public void end() {
-        Date now = new Date();
-        this.broadcast("end_game; " + now.getTime());
-    }
+    //request_start; <request_id>
+    //response; <request_id>; <sucess/fail>; optional<fail_message>
+    private void requestStart(WebSocket socket, String[] message) {
+        //this.broadcast("acknowledged");
 
-    private void sendResponse(WebSocket socket, String id, String message) {
-        socket.send("response; " + id + "; " + message);
+        this.sendResponse(socket, message[1], "fail; not implemented");
     }
 
     //get_scores; <request_id>
@@ -209,4 +184,36 @@ public class Sockets extends WebSocketServer{
 
         this.sendResponse(socket, message[1], "fail; not setup yet");
     }
+
+
+    //events:
+
+
+    //start_game; <timestamp>
+    public void startGame(long startTime) {
+        this.broadcast("start_game; " + startTime);
+    }
+    
+    //end_game; <timestamp>
+    public void end() {
+        Date now = new Date();
+        this.broadcast("end_game; " + now.getTime());
+    }
+
+    //score_update; <timestamp>; <name>; <score>; <player_hit>
+    //or base_capture; <timestamp>; <name>; <score>
+    public void update(int equipmentID, int score, int hitID) {
+        Date now = new Date();
+        PlayerInfo playerInfo = players.get(equipmentID);
+
+        //base capture
+        if (hitID == -1) {
+            this.broadcast("base_capture; " + now.getTime() + "; " + playerInfo.codeName + "; " + score);
+        } else {
+            PlayerInfo hitInfo = players.get(hitID);
+            this.broadcast("score_update; " + now.getTime() + "; " + playerInfo.codeName + "; " + score + "; " + hitInfo.codeName);
+        }   
+    }
+
+    
 }

@@ -350,12 +350,51 @@ function messageHandler(msg) {
     //lastMessage = msg;
     msgParts = msg.data.split(";");
     switch (msgParts[0].toLowerCase()) {
+        case "score_update":
+            handleScoreUpdate(msgParts);
+            break;
+        case "base_capture":
+            handleBaseCapture(msgParts);
+            break;
+        
+        case "start_game":
+            handleEndGame(msgParts);
+            break;
+        case "end_game":
+            handleEndGame(msgParts);
+            break;
         case "response":
             requests[msgParts[1].trim()](msgParts);
             delete requests[msgParts[1].trim()];
             break;
     }
     console.log("new message: " + msg.data);
+}
+
+//score_update; <timestamp>; <name>; <score>; <player_hit>
+function handleScoreUpdate(msgParts) {
+    let timestamp = Number(msgParts[1]);
+    let name = msgParts[2];
+    let score = Number(msgParts[3]);
+    let player_hit = msgParts[4];
+
+    //do_something
+}
+
+//or base_capture; <timestamp>; <name>; <score>
+function handleBaseCapture(msgParts) {
+    let timestamp = Number(msgParts[1]);
+    let name = msgParts[2];
+    let score = Number(msgParts[3]);
+}
+
+//end_game; <timestamp>
+function handleEndGame(msgParts) {
+    let timestamp = Number(msgParts[1]);
+}
+//start_game; <timestamp>
+function handleStartGame(msgParts) {
+    let timestamp = Number(msgParts[1]);
 }
 
 //request is what is wanted (like get_status)
@@ -373,6 +412,16 @@ function sendRequest(request, msg) {
 async function getStatus() {
     let status = await sendRequest("get_status","");
     return status[0].trim();
+}
+
+//request_start
+//<success/fail>; optional<fail_message>
+async function requestStart() {
+    let request = await sendRequest("request_start", "");
+
+    if (request[0].trim() == "fail") {
+        throw new Error(request[1]);
+    }
 }
 
 //get_scores
@@ -429,6 +478,17 @@ async function sendPlayerEntryByName(equipmentID, playerCodeName) {
     }
 }
 
+//request_start;
+//<success/fail>; result<start_time, failure_message>
+async function requestStart() {
+    let result = await sendRequest("request_start");
+
+    if (result[0].trim() == "fail") {
+        throw new Error(result[1].trim());
+    } else {
+        return Number(result[1]);
+    }
+}
 
 SOCKET.onopen = async () => {
     switch (await getStatus()) {
