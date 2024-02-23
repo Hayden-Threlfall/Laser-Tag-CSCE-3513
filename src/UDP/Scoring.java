@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Scoring {
     //Hashtable with player ids (which are actually equipment ids) as keys and point values as values
     public Hashtable<Integer, Integer> players = new Hashtable<>();
-    public ArrayList<Integer> green = new ArrayList<Integer>();
+    public ArrayList<Integer> green = new ArrayList<Integer>(); // these are unneccesary and will clog the program
     public ArrayList<Integer> red = new ArrayList<Integer>();
 
     private Sockets Socket = null;
@@ -20,6 +20,7 @@ public class Scoring {
         int player2 = -1;
         int[] playerIDs;
 
+        //parse the integers from the message
         String[] players = message.split(":");
         player1 = Integer.parseInt(players[0]);
         player2 = Integer.parseInt(players[1]);
@@ -49,12 +50,8 @@ public class Scoring {
         //pulling the ints from the message
         try{
             int[] playerIDs = this.parseInts(message);
-            try{
-                player1 = playerIDs[0];
-                player2 = playerIDs[1];
-            } catch (Exception e){
-                System.out.println("playerIDs array could not be converted to ints");
-            }
+            player1 = playerIDs[0];
+            player2 = playerIDs[1];
         } catch (Exception e) {
             System.out.println("parseInts failed");
         }
