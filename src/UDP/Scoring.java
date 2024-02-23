@@ -46,15 +46,17 @@ public class Scoring {
             System.out.println("parseInts failed");
         }
 
-        //check if players on same team even/odd
-        if(player1%2 == player2%2)
-            UDPSend.send(Integer.toString(player1));
-
-        if(!(player1 == -1 && player2 == -1) && (player1%2 != player2%2)){
+        if(!(player1 == -1 && player2 == -1)){
             //check if players are in hashtable and add them if not
             if(!(players.containsKey(player1) && players.containsKey(player2))) {
                 players.put(player1, 0);
                 players.put(player2, 0);   
+            }
+
+            //check if players on same team even/odd
+            if(player1%2 == player2%2) {
+                UDPSend.send(Integer.toString(player1));
+                return;
             }
 
             switch(player2){
