@@ -20,6 +20,7 @@ import org.java_websocket.server.WebSocketServer;
 
 import DATABASE.Database;
 import UDP.Scoring;
+import UDP.UDPSend;
 
 
 public class Sockets extends WebSocketServer{
@@ -188,6 +189,8 @@ public class Sockets extends WebSocketServer{
             this.scores.players.put(equipmentID, 0);
             this.players.put(equipmentID, new PlayerInfo(name, playerID));
 
+            UDPSend.send(Integer.toString(equipmentID));
+
             this.sendResponse(socket, message[1], "success; " + name);
         }
     }
@@ -208,6 +211,8 @@ public class Sockets extends WebSocketServer{
 
         this.scores.players.put(equipmentID, 0);
         this.players.put(equipmentID, new PlayerInfo(playerName, playerID));
+
+        UDPSend.send(Integer.toString(equipmentID));
 
         this.sendResponse(socket, message[1], "success");
     }
@@ -242,5 +247,5 @@ public class Sockets extends WebSocketServer{
         }   
     }
 
-    
+
 }
