@@ -6,14 +6,17 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.util.Scanner;
+import java.util.function.Consumer;
 import java.io.IOException;
 
 import DATABASE.Database;
+import HTTP.HTTPServer;
 import SOCKETS.Sockets;
 //import HTTP.HTTPServer;
 
 public class Main extends Thread{
     static Scoring Scores = new Scoring();
+
     public static void main(String[] args) throws UnknownHostException,IOException, InterruptedException{        
         Database database = new Database();
         UDPReceive UDPServer = new UDPReceive(Scores);
@@ -22,21 +25,28 @@ public class Main extends Thread{
         Sockets socketServer = new Sockets(8001, Scores, database);
         socketServer.start();
 
+        HTTPServer httpServer = new HTTPServer();
+        httpServer.start("HTTP/web");
+
         Scores.Sockets(socketServer);
 
         Scanner inp = new Scanner(System.in);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+
+        Thread hook = new Thread(() -> {
             try {
-                socketServer.stop(1000);
+                socketServer.stop(1);
+                httpServer.stop(1);
+                UDPServer.stop_processing();
                 inp.close();
+                System.exit(1);
             } catch (Exception e) {
                 //throw new Exception(e);
                 System.out.println("Failed to stop server!");
             }
-        }));
-
+        });
         
+        Runtime.getRuntime().addShutdownHook(hook);        
 
         
         System.out.println("enter close to exit");
@@ -46,9 +56,13 @@ public class Main extends Thread{
 
             if (inp_str.equals("close")) {
                 
-                socketServer.stop(1000);
+                socketServer.stop(1);
+                httpServer.stop(1);
+                UDPServer.stop_processing();
                 inp.close();
-                System.exit(1);
+                Runtime.getRuntime().removeShutdownHook(hook);
+                break;
+                //System.exit(1);
             }
         }
         

@@ -20,10 +20,17 @@ import java.util.Scanner;
 
 public class HTTPServer {
 
-    private static String WEB_DIR = "web";
+    //private static String WEB_DIR = ;
     public static void main(String[] args) throws IOException {
+        HTTPServer server = new HTTPServer();
+
+        server.start("web");
+    }
+
+    private HttpServer server;
+    public void start(String web_dir) throws IOException {
         int serverPort = 8000;
-        HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
+        server = HttpServer.create(new InetSocketAddress(serverPort), 0);
 
         
 
@@ -31,7 +38,7 @@ public class HTTPServer {
         
          
         //get all files within the web directory
-        File[] files = (new File(WEB_DIR)).listFiles();
+        File[] files = (new File(web_dir)).listFiles();
         //convert the array of files into a queue
         Queue<File> fileQueue = new LinkedList<>(Arrays.asList(files));
         
@@ -48,7 +55,7 @@ public class HTTPServer {
                 }
             } else {
                 //cut of the WEB_DIR/... part of the file path
-                String path = file.getPath().substring(WEB_DIR.length());
+                String path = file.getPath().substring(web_dir.length());
                 //create new handler for the request
                 StaticFile handler = new StaticFile(file);
                 //create the context at the path
@@ -70,7 +77,12 @@ public class HTTPServer {
         //server.createContext("/index.html");
         server.setExecutor(null); // creates a default executor
         server.start();
-        System.out.println("Server started on port " + serverPort);
+
+        System.out.println("HTTP Server start! http://localhost:" + serverPort + "/index.html");
+    }
+
+    public void stop(int timeout) {
+        server.stop(timeout);
     }
 
     

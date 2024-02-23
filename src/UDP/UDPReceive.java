@@ -8,6 +8,8 @@ public class UDPReceive extends Thread{
     private final static int PORT = 7501;
     private Scoring Scores;
 
+    private boolean running = false;
+
     public UDPReceive(Scoring s) {
         Scores = s;
     }
@@ -19,9 +21,14 @@ public class UDPReceive extends Thread{
 
             System.out.println("UDP Server is listening on port " + PORT);
 
-            while (true) {
+            running = true;
+            while (running) {
                 // Sleeps thread until allowed
                 sleep();
+
+                if (!running) {
+                    break;
+                }
                 // Create a buffer to hold incoming data
                 byte[] buffer = new byte[1024];
 
@@ -32,6 +39,7 @@ public class UDPReceive extends Thread{
                 socket.receive(packet);
                 
                 socket.close();
+
 
                 // Extract the data from the packet
                 String receivedData = new String(packet.getData(), 0, packet.getLength());
@@ -45,6 +53,11 @@ public class UDPReceive extends Thread{
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void stop_processing() {
+        running = false;
+        this.interrupt();
     }
     private static boolean receive = false;
 
@@ -65,6 +78,9 @@ public class UDPReceive extends Thread{
 
             } catch (InterruptedException ignore) {
                 // log.debug("interrupted: " + ignore.getMessage());
+                if (!running) {
+                    break;
+                }
             }
         }
     }
