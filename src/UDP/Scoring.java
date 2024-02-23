@@ -4,14 +4,10 @@ import SOCKETS.Sockets;
 import java.util.Hashtable;
 import java.net.Socket;
 import java.util.Arrays;
-import java.util.ArrayList;
 
 public class Scoring {
     //Hashtable with player ids (which are actually equipment ids) as keys and point values as values
     public Hashtable<Integer, Integer> players = new Hashtable<>();
-    public ArrayList<Integer> green = new ArrayList<Integer>(); // these are unneccesary and will clog the program
-    public ArrayList<Integer> red = new ArrayList<Integer>();
-
     private Sockets Socket = null;
 
     //grabs the ids from the UDP message
@@ -24,12 +20,6 @@ public class Scoring {
         String[] players = message.split(":");
         player1 = Integer.parseInt(players[0]);
         player2 = Integer.parseInt(players[1]);
-
-        //check if players on same team
-        if(green.contains(player1) && green.contains(player2))
-            UDPSend.send(Integer.toString(player1));
-        if(red.contains(player1) && red.contains(player2))
-            UDPSend.send(Integer.toString(player1));
 
         //create playerIDs with the new keyword so playerIDs can be resolved to a variable 
         playerIDs = new int[]{player1, player2};
@@ -56,7 +46,11 @@ public class Scoring {
             System.out.println("parseInts failed");
         }
 
-        if(!(player1 == -1 && player2 == -1)){
+        //check if players on same team even/odd
+        if(player1%2 == player2%2)
+            UDPSend.send(Integer.toString(player1));
+
+        if(!(player1 == -1 && player2 == -1) && (player1%2 != player2%2)){
             //check if players are in hashtable and add them if not
             if(!(players.containsKey(player1) && players.containsKey(player2))) {
                 players.put(player1, 0);
