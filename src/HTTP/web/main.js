@@ -37,68 +37,76 @@ let playerName = ""; // Initialize playerName variable
 
 // Function to create and display the popup
 const createPlayerNamePopup = () => {
-    // Create elements
-    const modal = document.createElement("div");
-    modal.classList.add("modal");
+    //promise to return name/cancel
+    return new Promise((resolve, reject) => {
+        // Create elements
+        const modal = document.createElement("div");
+        modal.classList.add("modal");
 
-    const modalContent = document.createElement("div");
-    modalContent.classList.add("modal-content");
+        const modalContent = document.createElement("div");
+        modalContent.classList.add("modal-content");
 
-    const modalHeader = document.createElement("div");
-    modalHeader.classList.add("modal-header");
+        const modalHeader = document.createElement("div");
+        modalHeader.classList.add("modal-header");
 
-    const closeBtn = document.createElement("span");
-    closeBtn.classList.add("close");
-    closeBtn.innerHTML = "&times;"; // Unicode for 'x' symbol
-    closeBtn.addEventListener("click", () => {
-        closeModal(modal);
+        const closeBtn = document.createElement("span");
+        closeBtn.classList.add("close");
+        closeBtn.innerHTML = "&times;"; // Unicode for 'x' symbol
+        closeBtn.addEventListener("click", () => {
+            //should probably reformat to not use errors as control flow
+            reject("cancelled");
+            closeModal(modal);
+        });
+
+        const headerText = document.createElement("h2");
+        headerText.textContent = "No player found, please enter player name";
+
+        modalHeader.appendChild(closeBtn);
+        modalHeader.appendChild(headerText);
+
+        const modalBody = document.createElement("div");
+        modalBody.classList.add("modal-body");
+
+        const playerNameInput = document.createElement("input");
+        playerNameInput.setAttribute("type", "text");
+        playerNameInput.setAttribute("id", "playerNameInput");
+        playerNameInput.setAttribute("maxlength", "10");
+        playerNameInput.setAttribute("placeholder", "Enter player name (max 10 characters)");
+
+        modalBody.appendChild(playerNameInput);
+
+        const modalFooter = document.createElement("div");
+        modalFooter.classList.add("modal-footer");
+
+        const cancelButton = document.createElement("button");
+        cancelButton.textContent = "Cancel";
+        cancelButton.addEventListener("click", () => {
+            reject("cancelled");
+            closeModal(modal);
+        });
+
+        const okButton = document.createElement("button");
+        okButton.textContent = "OK";
+        okButton.addEventListener("click", () => {
+            playerName = playerNameInput.value.trim();
+            console.log("Player name entered:", playerName);
+            //return playerName
+            resolve(playerName);
+            closeModal(modal);
+        });
+
+        modalFooter.appendChild(cancelButton);
+        modalFooter.appendChild(okButton);
+
+        modalContent.appendChild(modalHeader);
+        modalContent.appendChild(modalBody);
+        modalContent.appendChild(modalFooter);
+
+        modal.appendChild(modalContent);
+
+        // Append modal to body
+        document.body.appendChild(modal);
     });
-
-    const headerText = document.createElement("h2");
-    headerText.textContent = "No player found, please enter player name";
-
-    modalHeader.appendChild(closeBtn);
-    modalHeader.appendChild(headerText);
-
-    const modalBody = document.createElement("div");
-    modalBody.classList.add("modal-body");
-
-    const playerNameInput = document.createElement("input");
-    playerNameInput.setAttribute("type", "text");
-    playerNameInput.setAttribute("id", "playerNameInput");
-    playerNameInput.setAttribute("maxlength", "10");
-    playerNameInput.setAttribute("placeholder", "Enter player name (max 10 characters)");
-
-    modalBody.appendChild(playerNameInput);
-
-    const modalFooter = document.createElement("div");
-    modalFooter.classList.add("modal-footer");
-
-    const cancelButton = document.createElement("button");
-    cancelButton.textContent = "Cancel";
-    cancelButton.addEventListener("click", () => {
-        closeModal(modal);
-    });
-
-    const okButton = document.createElement("button");
-    okButton.textContent = "OK";
-    okButton.addEventListener("click", () => {
-        playerName = playerNameInput.value.trim();
-        console.log("Player name entered:", playerName);
-        closeModal(modal);
-    });
-
-    modalFooter.appendChild(cancelButton);
-    modalFooter.appendChild(okButton);
-
-    modalContent.appendChild(modalHeader);
-    modalContent.appendChild(modalBody);
-    modalContent.appendChild(modalFooter);
-
-    modal.appendChild(modalContent);
-
-    // Append modal to body
-    document.body.appendChild(modal);
 };
 
 // Function to close the modal
@@ -193,9 +201,12 @@ const handleEnterPress = async function (equipmentId, playerId) {
         // Handle error
         console.error(error);
         // Get player name somehow
-        createPlayerNamePopup();
-        const currentPlayerName = playerName; // Placeholder for getting player name
-        await sendPlayerEntryByName(equipmentId, playerId, currentPlayerName);
+        createPlayerNamePopup().then(async (playerName) => {
+            await sendPlayerEntryByName(equipmentId, playerId, playerName);
+        }).catch((err) => {
+            //do nothing, only error is cancelation
+        })
+        
     }
 };
 
