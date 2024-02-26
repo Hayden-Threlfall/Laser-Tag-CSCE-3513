@@ -579,12 +579,15 @@ async function getScores() {
 
 
 //add_player_id; <equipmentID>; <playerID>
-//<success/fail>; optional<failure_message>
+//<success/fail>; result<player_name, failure_message>
 async function sendPlayerEntryById(equipmentID, playerID) {
     let result = await sendRequest("add_player_id", equipmentID + "; " + playerID);
 
     if (result[0].trim() == "fail") {
         throw new Error(result[1].trim());
+    } else {
+        //name
+        return result[1].trim();
     }
 
 }

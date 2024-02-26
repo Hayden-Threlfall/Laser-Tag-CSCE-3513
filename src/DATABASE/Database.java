@@ -34,7 +34,7 @@ public class Database {
     }
 
     //search for player using ID and return name
-    public String searchPlayer(int playerID) {
+    public String searchPlayer(long playerID) {
         //search for id, if not found then signal front end to ask for code name
         String name = null;
         try {
@@ -60,7 +60,7 @@ public class Database {
     }
 
     //add player and return ID to go to front end
-    public void addPlayer(int playerID, String playerName) {
+    public void addPlayer(long playerID, String playerName) {
         //insert player into database, return their ID to the front end
         try {
             String sql = "insert into players values("+ playerID + ", '"+ playerName + "')";

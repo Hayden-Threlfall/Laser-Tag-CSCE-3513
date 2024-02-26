@@ -1,12 +1,6 @@
 package SOCKETS;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,8 +20,8 @@ import UDP.UDPSend;
 public class Sockets extends WebSocketServer{
     private class PlayerInfo {
         public final String codeName;
-        public final int playerID;
-        public PlayerInfo(String codeName, int playerID) {
+        public final long playerID;
+        public PlayerInfo(String codeName, long playerID) {
             this.codeName = codeName;
             this.playerID = playerID;
         }
@@ -173,7 +167,7 @@ public class Sockets extends WebSocketServer{
     //<success/fail>; result<player_name, failure_message>
     private void addPlayerByID(WebSocket socket, String[] message) {
         int equipmentID = Integer.parseInt(message[2].trim());
-        int playerID = Integer.parseInt(message[3].trim());
+        long playerID = Long.parseLong(message[3].trim());
         //do something
 
         String name = database.searchPlayer(playerID);
@@ -184,7 +178,7 @@ public class Sockets extends WebSocketServer{
         //this.sendResponse(socket, message[1], "fail; not setup yet");
 
         if (name == "NOT FOUND") {
-            this.sendResponse(socket, message[1], "missing_id");
+            this.sendResponse(socket, message[1], "fail; missing_id");
         } else {
             this.scores.players.put(equipmentID, 0);
             this.players.put(equipmentID, new PlayerInfo(name, playerID));
@@ -200,7 +194,7 @@ public class Sockets extends WebSocketServer{
     //<success/fail>; optional<failure_message>
     private void addPlayerByName(WebSocket socket, String[] message) {
         int equipmentID = Integer.parseInt(message[2].trim());
-        int playerID = Integer.parseInt(message[3].trim());
+        long playerID = Long.parseLong(message[3].trim());
         String playerName = message[4].trim();
         //do something
 
