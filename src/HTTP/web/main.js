@@ -1,3 +1,4 @@
+//per entry box1=userID, box2=equipmentID. press ENTER to send to backend
 /* GLOBAL VARIABLES */
 // List of players. Stores dicts for each player, containing their name, ID, and current score.
 let GREEN_TEAM = []
@@ -29,6 +30,81 @@ const splashScreen = () => {
         initializeEntryScreen()
     },3000)
 }
+
+let playerName = ""; // Initialize playerName variable
+
+/* FUNCTIONS */
+
+// Function to create and display the popup
+const createPlayerNamePopup = () => {
+    // Create elements
+    const modal = document.createElement("div");
+    modal.classList.add("modal");
+
+    const modalContent = document.createElement("div");
+    modalContent.classList.add("modal-content");
+
+    const modalHeader = document.createElement("div");
+    modalHeader.classList.add("modal-header");
+
+    const closeBtn = document.createElement("span");
+    closeBtn.classList.add("close");
+    closeBtn.innerHTML = "&times;"; // Unicode for 'x' symbol
+    closeBtn.addEventListener("click", () => {
+        closeModal(modal);
+    });
+
+    const headerText = document.createElement("h2");
+    headerText.textContent = "No player found, please enter player name";
+
+    modalHeader.appendChild(closeBtn);
+    modalHeader.appendChild(headerText);
+
+    const modalBody = document.createElement("div");
+    modalBody.classList.add("modal-body");
+
+    const playerNameInput = document.createElement("input");
+    playerNameInput.setAttribute("type", "text");
+    playerNameInput.setAttribute("id", "playerNameInput");
+    playerNameInput.setAttribute("maxlength", "10");
+    playerNameInput.setAttribute("placeholder", "Enter player name (max 10 characters)");
+
+    modalBody.appendChild(playerNameInput);
+
+    const modalFooter = document.createElement("div");
+    modalFooter.classList.add("modal-footer");
+
+    const cancelButton = document.createElement("button");
+    cancelButton.textContent = "Cancel";
+    cancelButton.addEventListener("click", () => {
+        closeModal(modal);
+    });
+
+    const okButton = document.createElement("button");
+    okButton.textContent = "OK";
+    okButton.addEventListener("click", () => {
+        playerName = playerNameInput.value.trim();
+        console.log("Player name entered:", playerName);
+        closeModal(modal);
+    });
+
+    modalFooter.appendChild(cancelButton);
+    modalFooter.appendChild(okButton);
+
+    modalContent.appendChild(modalHeader);
+    modalContent.appendChild(modalBody);
+    modalContent.appendChild(modalFooter);
+
+    modal.appendChild(modalContent);
+
+    // Append modal to body
+    document.body.appendChild(modal);
+};
+
+// Function to close the modal
+const closeModal = (modal) => {
+    modal.style.display = "none";
+};
 
 /* PLAYER SCREEN */
 const initializeEntryScreen = function() {
@@ -86,22 +162,41 @@ const initializeEntryScreen = function() {
 
     document.body.appendChild(editScreenDiv);
 
-    // Event listeners
-    document.addEventListener("keydown", function(event) {
-        if (event.key === "3") {
-            document.getElementById("editScreen").style.display = "none";
-            acknowledgeGameStart();
-        } else if (event.key === "1") {
-            document.getElementById("editScreen").style.display = "block";
-            document.getElementById("actionScreen").remove();
-        } else if (event.key === "Delete") {
-            // Clear selected entry
-            clearSelectedEntry();
-        } else if (event.key === "0") {
-            // Clear all entries
-            clearAllEntries();
+    // Event listeners for buttons
+    const buttons = document.querySelectorAll("#editScreen button");
+    buttons.forEach(button => {
+        button.addEventListener("click", handleButtonClick);
+    });
+
+// Add event listeners to all input fields to capture Enter key press
+const inputFields = document.querySelectorAll("#editScreen input[type='text']");
+inputFields.forEach(input => {
+    input.addEventListener("keyup", function (event) {
+        if (event.key === "Enter") {
+            const entryRow = this.parentElement;
+            const playerIdInput = entryRow.querySelector("input[type='text'][maxlength='10']:nth-child(2)"); // Select the first input for player ID
+            const equipmentIdInput = entryRow.querySelector("input[type='text'][maxlength='10']:nth-child(3)"); // Select the second input for equipment ID
+            
+            const playerId = playerIdInput.value.trim();
+            const equipmentId = equipmentIdInput.value.trim();
+           
+            handleEnterPress(equipmentId, playerId);
         }
     });
+});
+};
+
+const handleEnterPress = async function (equipmentId, playerId) {
+    try {
+        await sendPlayerEntryById(equipmentId, playerId);
+    } catch (error) {
+        // Handle error
+        console.error(error);
+        // Get player name somehow
+        createPlayerNamePopup();
+        const currentPlayerName = playerName; // Placeholder for getting player name
+        await sendPlayerEntryByName(equipmentId, playerId, currentPlayerName);
+    }
 };
 
 const createTeamDiv = function(teamName) {
@@ -132,15 +227,15 @@ const createTeamDiv = function(teamName) {
         // Player ID input
         const playerIdInput = document.createElement("input");
         playerIdInput.type = "text";
-        playerIdInput.maxLength = 5;
+        playerIdInput.maxLength = 10;
         playerIdInput.style.marginRight = "10px";
         entryRow.appendChild(playerIdInput);
 
         // Player code input
-        const playerCodeInput = document.createElement("input");
-        playerCodeInput.type = "text";
-        playerCodeInput.maxLength = 10;
-        entryRow.appendChild(playerCodeInput);
+        const equipmentIDInput = document.createElement("input");
+        equipmentIDInput.type = "text";
+        equipmentIDInput.maxLength = 10;
+        entryRow.appendChild(equipmentIDInput);
 
         entriesDiv.appendChild(entryRow);
     }
@@ -148,6 +243,20 @@ const createTeamDiv = function(teamName) {
     teamDiv.appendChild(entriesDiv);
 
     return teamDiv;
+};
+
+const handleButtonClick = function(event) {
+    const buttonText = event.target.textContent;
+    if (buttonText === "F1 Edit Game") {
+        document.getElementById("editScreen").style.display = "block";
+        document.getElementById("actionScreen").remove();
+    } else if (buttonText === "F3 Start Game") {
+        document.getElementById("editScreen").style.display = "none";
+        acknowledgeGameStart();
+    }else if (buttonText === "F12 Clear Game") {
+        // Clear all entries
+        clearAllEntries();
+    }
 };
 
 const clearSelectedEntry = function() {
@@ -177,7 +286,7 @@ const initializeActionScreen = () => {
         <select id="scoreWindowRed" size="8" style="float:left; width:500px"></select>
         <select id="scoreWindowGreen" size="8"  style="float:right; width:500px"></select>
     </div>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <button id="returnButton" onclick="initializeEntryScreen()" style="display:none">Back to input screen</button>`)
 
     document.body.innerHTML = body.join('')
