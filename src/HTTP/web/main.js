@@ -599,6 +599,8 @@ function handleBaseCapture(msgParts) {
 //end_game; <timestamp>
 function handleEndGame(msgParts) {
     let timestamp = Number(msgParts[1]);
+
+    acknowledgeGameEnd()
 }
 //start_game; <timestamp>
 function handleStartGame(msgParts) {
