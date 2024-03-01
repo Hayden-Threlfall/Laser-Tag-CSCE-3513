@@ -1,14 +1,15 @@
 package UDP;
 //For the Hashtable
 import SOCKETS.Sockets;
-import java.util.Hashtable;
+// import java.util.Hashtable;
 import java.util.Arrays;
 
 public class Scoring {
     //Hashtable with player ids (which are actually equipment ids) as keys and point values as values
-    public Hashtable<Integer, Integer> players = new Hashtable<>();
+    // public Hashtable<Integer, Integer> players = new Hashtable<>();
     private Sockets Socket = null;
-
+    //players will need to be initialized
+    private Players Players;
     //grabs the ids from the UDP message
     public int[] parseInts(String message){
         int player1 = -1;
@@ -31,6 +32,10 @@ public class Scoring {
         Socket = sockets;
     }
 
+    public void Players(Players players) {
+        Players = players;
+    }
+
     //this is the method that should 
     public void update(String message) {
         int player1 = -1;
@@ -47,10 +52,11 @@ public class Scoring {
 
         if(!(player1 == -1 && player2 == -1)){
             //check if players are in hashtable and add them if not
-            if(!(players.containsKey(player1) && players.containsKey(player2))) {
-                players.put(player1, 0);
-                players.put(player2, 0);   
-            }
+            //-- shouldn't be necessary now with all info being pulled from front end --
+            // if(!(players.containsKey(player1) && players.containsKey(player2))) {
+            //     players.put(player1, 0);
+            //     players.put(player2, 0);   
+            // }
 
             //check if players on same team even/odd
             if(player1%2 == player2%2) {
@@ -62,22 +68,22 @@ public class Scoring {
                 //add base capture badge notification
                 case 43: //green base captured
                     //System.out.println(players.get(player1)); //test code
-                    players.put(player1, players.get(player1) + 100);
-                    Socket.update(player1, players.get(player1), -1);
+                    Players.addScore(player1, 100);
+                    Socket.update(player1, Players.getScore(player1), -1);
                     //System.out.println(players.get(player1)); //test code
                 break;
 
                 case 53: //red base captured
                     //System.out.println(players.get(player1)); //test code
-                    players.put(player1, players.get(player1) + 100);
-                    Socket.update(player1, players.get(player1), -1);
+                    Players.addScore(player1, 100);
+                    Socket.update(player1, Players.getScore(player1), -1);
                     //System.out.println(players.get(player1)); //test code
                 break;
 
                 default: //one player has hit another
                     //System.out.println(players.get(player1)); //test code
-                    players.put(player1, players.get(player1) + 10);
-                    Socket.update(player1, players.get(player1), player2);
+                    Players.addScore(player1, 10);
+                    Socket.update(player1, Players.getScore(player1), player2);
                     UDPSend.send(String.valueOf(player2));
                     //System.out.println(players.get(player1)); //test code
                 break;
@@ -89,7 +95,7 @@ public class Scoring {
     }
 
     public void resetTable() {
-        players.clear();
+        Players.clear();
     }
     
     public static void main(String[] args) {
