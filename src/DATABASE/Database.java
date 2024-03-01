@@ -38,9 +38,9 @@ public class Database {
         //search for id, if not found then signal front end to ask for code name
         String name = null;
         try {
-            String query = "select name from players where id = '" + playerID +"'";
+            String sql = "select name from players where id = '" + playerID +"'";
             Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery(query);
+            ResultSet rs = st.executeQuery(sql);
 
             //retrieve name of player at index
             while(rs.next()) {

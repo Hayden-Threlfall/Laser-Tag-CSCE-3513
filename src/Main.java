@@ -12,23 +12,26 @@ import java.io.IOException;
 import DATABASE.Database;
 import HTTP.HTTPServer;
 import SOCKETS.Sockets;
+import UDP.Players;
 //import HTTP.HTTPServer;
 
 public class Main extends Thread{
     static Scoring Scores = new Scoring();
 
-    public static void main(String[] args) throws UnknownHostException,IOException, InterruptedException{        
+    public static void main(String[] args) throws UnknownHostException,IOException, InterruptedException{    
+        Players playerInfo = new Players();    
         Database database = new Database();
         UDPReceive UDPServer = new UDPReceive(Scores);
         UDPServer.start();
 
-        Sockets socketServer = new Sockets(8001, Scores, database);
+        Sockets socketServer = new Sockets(8001, Scores, database, playerInfo);
         socketServer.start();
 
         HTTPServer httpServer = new HTTPServer();
         httpServer.start("HTTP/web");
 
         Scores.Sockets(socketServer);
+        Scores.Players(playerInfo);
 
         Scanner inp = new Scanner(System.in);
 
