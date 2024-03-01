@@ -11,6 +11,7 @@ let RED_TEAM = []
 */
 let scoreWindowRed
 let scoreWindowGreen
+let eventWindow
 
 /* FUNCTIONS */
 /* SPLASH SCREEN */
@@ -294,10 +295,13 @@ const initializeActionScreen = () => {
     </div>
     <br><br>
     <div style="text-align:center;">
-        <select id="scoreWindowRed" size="8" style="float:left; width:500px"></select>
-        <select id="scoreWindowGreen" size="8"  style="float:right; width:500px"></select>
+        <select id="scoreWindowRed" size="15" style="float:left; width:500px"></select>
+        <select id="scoreWindowGreen" size="15"  style="float:right; width:500px"></select>
     </div>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <div style="margin:auto;text-align:center;">
+        <select id="eventWindow" size="15" style="width:50%;"></select>
+    </div>
     <button id="returnButton" onclick="initializeEntryScreen()" style="display:none">Back to input screen</button>`)
 
     document.body.innerHTML = body.join('')
@@ -305,14 +309,16 @@ const initializeActionScreen = () => {
     // Store the HTML element for the score menu
     scoreWindowRed = document.getElementById("scoreWindowRed")
     scoreWindowGreen = document.getElementById("scoreWindowGreen")
+    eventWindow = document.getElementById("eventWindow")
     
     DEBUG_FILL_PLAYER()
     displayScore()
     
     initializeTimer(30, acknowledgeGameEnd)
     DEBUG_CHANGE_SCORES()
+    DEBUG_FILL_EVENT()
     let checkBase = setTimeout(() => {
-        acknowledgeBaseCapture(4, 1000)
+        acknowledgeBaseCapture("Makoto", 1000)
     }, 10000)
 }
 
@@ -388,17 +394,17 @@ const acknowledgeGameEnd = () => {
 }
 
 // Player has their username modified to add [B] to the front
-const acknowledgeBaseCapture = (playerID, newScore) => {
+const acknowledgeBaseCapture = (username, newScore) => {
     // Find the player and modify their username with the base change.
     RED_TEAM.forEach((element) => {
-        if (element.id == playerID) {
+        if (element.username == username) {
             let newUsername = "[B] " + element.username
             element.username = newUsername
             element.score = newScore
         }
     })
     GREEN_TEAM.forEach((element) => {
-        if (element.id == playerID) {
+        if (element.username == username) {
             let newUsername = "[B] " + element.username
             element.username = newUsername
             element.score = newScore
@@ -410,21 +416,50 @@ const acknowledgeBaseCapture = (playerID, newScore) => {
 }
 
 // Update player scores when UDP sends player ID.
-const acknowledgeScore = (playerID, newScore) => {
-    // Iterate through elements in both team arrays looking for desired player, and update their score when found
+// OUTDATED, only kept for testing. UDP sends username instead.
+// const updateScoreID = (playerID, newScore) => {
+//     // Iterate through elements in both team arrays looking for desired player, and update their score when found
+//     RED_TEAM.forEach((element) => {
+//         if (element.id == playerID) {
+//             element.score = newScore
+//         }
+//     })
+//     GREEN_TEAM.forEach((element) => {
+//         if (element.id == playerID) {
+//             element.score = newScore
+//         }
+//     })
+
+//     // Call the displayScore function so the scores reflect the change.
+//     displayScore()
+// }
+
+// Updates score when UDP sends username.
+const updateScore = (username, newScore) => {
     RED_TEAM.forEach((element) => {
-        if (element.id == playerID) {
+        if (element.username == username) {
             element.score = newScore
         }
     })
     GREEN_TEAM.forEach((element) => {
-        if (element.id == playerID) {
+        if (element.username == username) {
             element.score = newScore
         }
     })
 
     // Call the displayScore function so the scores reflect the change.
     displayScore()
+}
+
+// Posts an event to the event window. Takes in usernames of attacker and hit player.
+const postEvent = (hitPlayer, attacker) => {
+    let event = `Player ${attacker} hit ${hitPlayer}!`
+    
+    let option = document.createElement('option')
+    option.value = event
+    option.innerHTML = event
+    eventWindow.appendChild(option)
+    option.scrollIntoView()
 }
 
 // When backend sends game start permession
@@ -448,16 +483,56 @@ const DEBUG_FILL_PLAYER = () => {
     GREEN_TEAM.push({username:'Keigh', score:0, id:10})
 }
 
-// DEBUG; Tests the various callback functions to make sure they work.
+// DEBUG: Tests the various callback functions to make sure they work.
 const DEBUG_CHANGE_SCORES = () => {
     let randNum = 0
     let randScore = 0
     let fillTimer = setInterval(() => {
-        randNum = Math.floor(Math.random() * 11)
+        randNum = Math.floor(Math.random() * 10)
         randScore = Math.floor(Math.random() * 11)
         // console.log(randNum)
         // console.log(randScore)
-        acknowledgeScore(randNum, randScore)
+
+        if(randNum >= 5) {
+            randNum-=5
+            // console.log(randNum)
+            updateScore(GREEN_TEAM[randNum].username, randScore)
+        }
+        else {
+            // console.log(randNum)
+            updateScore(RED_TEAM[randNum].username, randScore)
+        }
+    },500)
+}
+
+// DEBUG: Puts random messages into the event queue to see if it works.
+const DEBUG_FILL_EVENT = () => {
+    let eventTimer = setInterval(() => {
+        let randP1 = Math.floor(Math.random() * 10)
+        let randP2 = Math.floor(Math.random() * 10)
+        let P1
+        let P2
+
+        if(randP1 >= 5) {
+            randP1-=5
+            // console.log(randNum)
+            P1 = GREEN_TEAM[randP1]
+        }
+        else {
+            // console.log(randNum)
+            P1 = RED_TEAM[randP1]
+        }
+        if(randP2 >= 5) {
+            randP2-=5
+            // console.log(randNum)
+            P2 = GREEN_TEAM[randP2]
+        }
+        else {
+            // console.log(randNum)
+            P2 = RED_TEAM[randP2]
+        }
+
+        postEvent(P1.username, P2.username)
     },500)
 }
 
@@ -508,6 +583,8 @@ function handleScoreUpdate(msgParts) {
     let player_hit = msgParts[4];
 
     //do_something
+    updateScore(name, score)
+    postEvent(player_hit, name)
 }
 
 //or base_capture; <timestamp>; <name>; <score>
@@ -515,6 +592,8 @@ function handleBaseCapture(msgParts) {
     let timestamp = Number(msgParts[1]);
     let name = msgParts[2];
     let score = Number(msgParts[3]);
+
+    acknowledgeBaseCapture(name, score)
 }
 
 //end_game; <timestamp>
