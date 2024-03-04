@@ -153,8 +153,7 @@ const initializeEntryScreen = function() {
     const buttonLabels = [
         "F1 Edit Game",
         "F2 Game Parameters",
-        "F3 Start Game",
-        "F5 PreEntered Games",
+        "F5 Start Game",
         "F7",
         "F8 View Game",
         "F10 Flick Sync",
@@ -171,10 +170,27 @@ const initializeEntryScreen = function() {
 
     document.body.appendChild(editScreenDiv);
 
-    // Event listeners for buttons
+    //Click Event listeners for buttons
     const buttons = document.querySelectorAll("#editScreen button");
     buttons.forEach(button => {
         button.addEventListener("click", handleButtonClick);
+    });
+
+    // Button Press Event listeners
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "F5") {
+            document.getElementById("editScreen").style.display = "none";
+            acknowledgeGameStart();
+        } else if (event.key === "F1") {
+            document.getElementById("editScreen").style.display = "block";
+            document.getElementById("actionScreen").remove();
+        } else if (event.key === "DEL") {
+            // Clear selected entry
+            clearSelectedEntry();
+        } else if (event.key === "F12") {
+            // Clear all entries
+            clearAllEntries();
+        }
     });
 
 // Add event listeners to all input fields to capture Enter key press
@@ -241,12 +257,18 @@ const createTeamDiv = function(teamName) {
         playerIdInput.type = "text";
         playerIdInput.maxLength = 10;
         playerIdInput.style.marginRight = "10px";
+        playerIdInput.addEventListener("input", function(event) {
+            this.value = this.value.replace(/\D/g, ''); // Allow only numeric input
+        });
         entryRow.appendChild(playerIdInput);
 
-        // Player code input
+        // Equipment ID input
         const equipmentIDInput = document.createElement("input");
         equipmentIDInput.type = "text";
         equipmentIDInput.maxLength = 10;
+        equipmentIDInput.addEventListener("input", function(event) {
+            this.value = this.value.replace(/\D/g, ''); // Allow only numeric input
+        });
         entryRow.appendChild(equipmentIDInput);
 
         entriesDiv.appendChild(entryRow);
@@ -262,10 +284,10 @@ const handleButtonClick = function(event) {
     if (buttonText === "F1 Edit Game") {
         document.getElementById("editScreen").style.display = "block";
         document.getElementById("actionScreen").remove();
-    } else if (buttonText === "F3 Start Game") {
+    } else if (buttonText === "F5 Start Game") {
         document.getElementById("editScreen").style.display = "none";
         acknowledgeGameStart();
-    }else if (buttonText === "F12 Clear Game") {
+    } else if (buttonText === "F12 Clear Game") {
         // Clear all entries
         clearAllEntries();
     }
