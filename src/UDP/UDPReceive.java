@@ -23,9 +23,6 @@ public class UDPReceive extends Thread{
 
             running = true;
             while (running) {
-                // Sleeps thread until allowed
-                sleep();
-
                 if (!running) {
                     break;
                 }
@@ -58,30 +55,5 @@ public class UDPReceive extends Thread{
     public void stop_processing() {
         running = false;
         this.interrupt();
-    }
-    private static boolean receive = false;
-
-    public synchronized static void allowRecieve() {
-        receive = true;
-    }
-
-    public synchronized static void blockRecieve() {
-        receive = false;
-    }
-
-    private synchronized void sleep() {
-
-        while (!receive) {
-
-            try {
-                this.wait();
-
-            } catch (InterruptedException ignore) {
-                // log.debug("interrupted: " + ignore.getMessage());
-                if (!running) {
-                    break;
-                }
-            }
-        }
     }
 }

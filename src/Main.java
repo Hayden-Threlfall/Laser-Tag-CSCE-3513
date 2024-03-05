@@ -17,17 +17,23 @@ import UDP.Players;
 
 public class Main extends Thread{
     static Scoring Scores = new Scoring();
+    static long endTime = 0;
+    static Players playerInfo;
+    static Database database; 
+    static UDPReceive UDPServer;
+    static Sockets socketServer;
+    static HTTPServer httpServer;
 
     public static void main(String[] args) throws UnknownHostException,IOException, InterruptedException{    
-        Players playerInfo = new Players();    
-        Database database = new Database();
-        UDPReceive UDPServer = new UDPReceive(Scores);
+        playerInfo = new Players();    
+        database = new Database();
+        UDPServer = new UDPReceive(Scores);
         UDPServer.start();
 
-        Sockets socketServer = new Sockets(8001, Scores, database, playerInfo);
+        socketServer = new Sockets(8001, Scores, database, playerInfo);
         socketServer.start();
 
-        HTTPServer httpServer = new HTTPServer();
+        httpServer = new HTTPServer();
         httpServer.start("HTTP/web");
 
         Scores.Sockets(socketServer);
@@ -67,26 +73,42 @@ public class Main extends Thread{
                 break;
                 //System.exit(1);
             }
+
+            if (startGame) {
+                // 30 second setup timer1
+                startGame = false;
+                gameStartHelper();
+            }
         }
         
 
     }
+
+    public static void startTime() {
+        endTime = System.currentTimeMillis() + 36000 + 3000;
+        socketServer.startGame(System.currentTimeMillis());
+    }
+
     public static void begin() {
-        UDPReceive.allowRecieve();
+        UDPSend.startGame();
     }
 
     public static void end() {
-        UDPReceive.blockRecieve();
+        UDPSend.endGame();
+        socketServer.end();
+    }
+
+    public static void reset() {
+        
         Scores.resetTable();
     }
 
-
+    private static boolean startGame = false;
     public static void gameStart(){
-        UDPSend.startGame();
-        // 6 minute timer + 30 seconds for start of game
-        long endTime = System.currentTimeMillis() + 36000 + 3000; 
+        startGame = true;
+    }
 
-        // 30 second setup timer
+    private static void gameStartHelper() { 
         try {
             Thread.sleep(30000);
         } catch (Exception e) {
@@ -94,56 +116,12 @@ public class Main extends Thread{
         }
 
         begin();
-
         while(System.currentTimeMillis() <= endTime) {
             
         }
-
-        UDPSend.endGame();
-
-        while(true){ // Replace false with some sort of bool for resting
-            System.err.println();
-        }
-         // cleares table should be all this does
+        end();
     }
 
-    // public static void test(Scoring Scores) throws IOException {
-    //     String input = "";
-    //     String username;
-    //     int id;
-    //     String team;
-    //     BufferedReader reader = new BufferedReader(
-    //         new InputStreamReader(System.in));
-    //     System.out.println("Welcome to laser tag test suite to go to the game start stage please type in `f5`");
-    //     while(input != "f5") {
-    //         System.out.print("Enter a Player `Username:Gear ID:Team color(green or red)` No more than 15 per team");
-    //         input  = reader.readLine();
-    //         username = input.split(":")[0];
-    //         id = Integer.valueOf(input.split(":")[1]);
-    //         team = input.split(":")[2];
-    //         //Insert Send Data to Communication Layer, should post to postgress and save data to serve //
-    //     }
-    //     input = "";
-    //     UDPSend.startGame();
-    //     long endTime = System.currentTimeMillis() + 36000; 
-
-    //     while(System.currentTimeMillis() <= endTime || input != "f5") {
-    //         System.out.print("Enter a valid hit UDP message ect: `ID:ID`, `ID:Base_Code`, `ID` (`f5` to quit early)");
-    //         input  = reader.readLine();
-    //         Scores.update(input);
-    //         // Insert Print the hashmap from scores //
-    //     }
-    //     input = "";
-
-    //     UDPSend.endGame();
-
-    //     while(input != "f5") {
-    //         System.out.print("Type `f5` to reset");
-    //         input  = reader.readLine();
-    //     }
-
-    //     // Insert Reset Method //
-    // }
 
     
 }
