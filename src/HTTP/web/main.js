@@ -319,8 +319,8 @@ async function initializeActionScreen() {
     </div>
     <br><br>
     <div style="text-align:center;">
-        <select id="scoreWindowRed" size="15" style="float:left; width:500px"></select>
-        <select id="scoreWindowGreen" size="15"  style="float:right; width:500px"></select>
+        <select id="scoreWindowRed" size="15" style="float:left; width:500px; color:red"></select>
+        <select id="scoreWindowGreen" size="15"  style="float:right; width:500px; color:green"></select>
     </div>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <div style="margin:auto;text-align:center;">
@@ -359,9 +359,9 @@ async function initializeActionScreen() {
     initializeTimer(30, acknowledgeGameEnd)
     // DEBUG_CHANGE_SCORES()
     // DEBUG_FILL_EVENT()
-    let checkBase = setTimeout(() => {
-        acknowledgeBaseCapture("Makoto", 1000)
-    }, 10000)
+    // let checkBase = setTimeout(() => {
+    //     acknowledgeBaseCapture("Makoto", 1000)
+    // }, 10000)
 }
 
 // Initializes a timer. Input is the length of the timer in seconds.
@@ -504,6 +504,16 @@ const postEvent = (hitPlayer, attacker) => {
     option.scrollIntoView()
 }
 
+const postBaseEvent = (playerName) => {
+    let event = `Player ${playerName} captured the base!`
+    
+    let option = document.createElement('option')
+    option.value = event
+    option.innerHTML = event
+    eventWindow.appendChild(option)
+    option.scrollIntoView()
+}
+
 // When backend sends game start permession
 const acknowledgeGameStart = () => {
     //Initialize the action screen
@@ -526,26 +536,26 @@ const DEBUG_FILL_PLAYER = () => {
 }
 
 // DEBUG: Tests the various callback functions to make sure they work.
-const DEBUG_CHANGE_SCORES = () => {
-    let randNum = 0
-    let randScore = 0
-    let fillTimer = setInterval(() => {
-        randNum = Math.floor(Math.random() * 10)
-        randScore = Math.floor(Math.random() * 11)
-        // console.log(randNum)
-        // console.log(randScore)
+// const DEBUG_CHANGE_SCORES = () => {
+//     // let randNum = 0
+//     let randScore = 0
+//     let fillTimer = setInterval(() => {
+//         // randNum = Math.floor(Math.random() * 10)
+//         randScore = Math.floor(Math.random() * 11)
+//         // console.log(randNum)
+//         // console.log(randScore)
 
-        if(randNum >= 5) {
-            randNum-=5
-            // console.log(randNum)
-            updateScore(GREEN_TEAM[randNum].username, randScore)
-        }
-        else {
-            // console.log(randNum)
-            updateScore(RED_TEAM[randNum].username, randScore)
-        }
-    },500)
-}
+//         if(randNum >= 5) {
+//             randNum-=5
+//             // console.log(randNum)
+//             updateScore(GREEN_TEAM[randNum].username, randScore)
+//         }
+//         else {
+//             // console.log(randNum)
+//             updateScore(RED_TEAM[randNum].username, randScore)
+//         }
+//     },500)
+// }
 
 // DEBUG: Puts random messages into the event queue to see if it works.
 const DEBUG_FILL_EVENT = () => {
@@ -620,9 +630,12 @@ function messageHandler(msg) {
 //score_update; <timestamp>; <name>; <score>; <player_hit>
 function handleScoreUpdate(msgParts) {
     let timestamp = Number(msgParts[1]);
-    let name = msgParts[2];
+    let name = msgParts[2].trim();
     let score = Number(msgParts[3]);
-    let player_hit = msgParts[4];
+    let player_hit = msgParts[4].trim();
+
+
+    //updateScore(GREEN_TEAM[randNum].username, randScore)
 
     //do_something
     updateScore(name, score)
@@ -632,10 +645,11 @@ function handleScoreUpdate(msgParts) {
 //or base_capture; <timestamp>; <name>; <score>
 function handleBaseCapture(msgParts) {
     let timestamp = Number(msgParts[1]);
-    let name = msgParts[2];
+    let name = msgParts[2].trim();
     let score = Number(msgParts[3]);
 
     acknowledgeBaseCapture(name, score)
+    postBaseEvent(name)
 }
 
 //end_game; <timestamp>
