@@ -8,20 +8,18 @@ public class UDPReceive extends Thread{
     private final static int PORT = 7501;
     private Scoring Scores;
 
-    private boolean running = false;
-
     public UDPReceive(Scoring s) {
         Scores = s;
     }
-
+    DatagramSocket socket;
+    boolean running = true;
     public void run() {
         try {
             // Create a DatagramSocket to listen for UDP packets on the specified port
-            DatagramSocket socket = new DatagramSocket(PORT);
+            socket = new DatagramSocket(PORT);
 
             System.out.println("UDP Server is listening on port " + PORT);
 
-            running = true;
             while (running) {
                 if (!running) {
                     break;
@@ -35,8 +33,7 @@ public class UDPReceive extends Thread{
                 // Receive the UDP packet
                 socket.receive(packet);
                 
-                socket.close();
-
+                //socket.close();
 
                 // Extract the data from the packet
                 String receivedData = new String(packet.getData(), 0, packet.getLength());
@@ -47,6 +44,7 @@ public class UDPReceive extends Thread{
                 Scores.update(receivedData);
             }
 
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,6 +52,9 @@ public class UDPReceive extends Thread{
 
     public void stop_processing() {
         running = false;
+        socket.close();
         this.interrupt();
     }
+
+
 }

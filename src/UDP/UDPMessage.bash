@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Set the target IP address and port
-TARGET_IP="127.0.0.1"
+TARGET_IP="192.168.137.142"
 TARGET_PORT="7501"
 
 # Set the message to be sent
-MESSAGE="Hello, UDP!"
+MESSAGE="2:5"
 
 # Use echo to send the UDP message without netcat
 echo -n "$MESSAGE" > /dev/udp/$TARGET_IP/$TARGET_PORT

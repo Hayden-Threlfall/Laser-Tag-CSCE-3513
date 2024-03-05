@@ -211,7 +211,7 @@ inputFields.forEach(input => {
 });
 };
 
-const handleEnterPress = async function (equipmentId, playerId) {
+const handleEnterPress = async function (equipmentId, playerId, team) {
     try {
         await sendPlayerEntryById(equipmentId, playerId);
     } catch (error) {
@@ -225,6 +225,8 @@ const handleEnterPress = async function (equipmentId, playerId) {
         })
         
     }
+
+    //If successful 
 };
 
 const createTeamDiv = function(teamName) {
@@ -309,7 +311,7 @@ const clearAllEntries = function() {
 
 
 /* ACTION SCREEN */
-const initializeActionScreen = () => {
+async function initializeActionScreen() {
     let body = []
     body.push(`
     <div id="timerParent" style="text-align:center;">
@@ -317,8 +319,8 @@ const initializeActionScreen = () => {
     </div>
     <br><br>
     <div style="text-align:center;">
-        <select id="scoreWindowRed" size="15" style="float:left; width:500px"></select>
-        <select id="scoreWindowGreen" size="15"  style="float:right; width:500px"></select>
+        <select id="scoreWindowRed" size="15" style="float:left; width:500px; color:red"></select>
+        <select id="scoreWindowGreen" size="15"  style="float:right; width:500px; color:green"></select>
     </div>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <div style="margin:auto;text-align:center;">
@@ -333,15 +335,33 @@ const initializeActionScreen = () => {
     scoreWindowGreen = document.getElementById("scoreWindowGreen")
     eventWindow = document.getElementById("eventWindow")
     
-    DEBUG_FILL_PLAYER()
+    // Get the player names to store in the arrays
+    playerNames = await getScores() //Returns a dict containins two dicts with usernames separated by team
+    console.log(playerNames)
+    for (const [name, score] of Object.entries(playerNames['red_scores'])) {
+        RED_TEAM.push({'username':name, 'score':score})
+    }
+    for (const [name, score] of Object.entries(playerNames['green_scores'])) {
+        GREEN_TEAM.push({'username':name, 'score':score})
+    }
+    // playerNames['red_scores'].forEach(user => {
+    //     // user is a dict. Each key is a username and each value is a score.
+    //     // Append usernames to team array.
+    //     RED_TEAM.push({'username':user.key, 'score':user[user.key]})
+    // })
+    // playerNames['green_scores'].forEach(user => {
+    //     GREEN_TEAM.push({'username':user.key, 'score':user[user.key]})
+    // })
+
+    // DEBUG_FILL_PLAYER()
     displayScore()
     
     initializeTimer(30, acknowledgeGameEnd)
-    DEBUG_CHANGE_SCORES()
-    DEBUG_FILL_EVENT()
-    let checkBase = setTimeout(() => {
-        acknowledgeBaseCapture("Makoto", 1000)
-    }, 10000)
+    // DEBUG_CHANGE_SCORES()
+    // DEBUG_FILL_EVENT()
+    // let checkBase = setTimeout(() => {
+    //     acknowledgeBaseCapture("Makoto", 1000)
+    // }, 10000)
 }
 
 // Initializes a timer. Input is the length of the timer in seconds.
@@ -484,6 +504,16 @@ const postEvent = (hitPlayer, attacker) => {
     option.scrollIntoView()
 }
 
+const postBaseEvent = (playerName) => {
+    let event = `Player ${playerName} captured the base!`
+    
+    let option = document.createElement('option')
+    option.value = event
+    option.innerHTML = event
+    eventWindow.appendChild(option)
+    option.scrollIntoView()
+}
+
 // When backend sends game start permession
 const acknowledgeGameStart = () => {
     //Initialize the action screen
@@ -506,26 +536,26 @@ const DEBUG_FILL_PLAYER = () => {
 }
 
 // DEBUG: Tests the various callback functions to make sure they work.
-const DEBUG_CHANGE_SCORES = () => {
-    let randNum = 0
-    let randScore = 0
-    let fillTimer = setInterval(() => {
-        randNum = Math.floor(Math.random() * 10)
-        randScore = Math.floor(Math.random() * 11)
-        // console.log(randNum)
-        // console.log(randScore)
+// const DEBUG_CHANGE_SCORES = () => {
+//     // let randNum = 0
+//     let randScore = 0
+//     let fillTimer = setInterval(() => {
+//         // randNum = Math.floor(Math.random() * 10)
+//         randScore = Math.floor(Math.random() * 11)
+//         // console.log(randNum)
+//         // console.log(randScore)
 
-        if(randNum >= 5) {
-            randNum-=5
-            // console.log(randNum)
-            updateScore(GREEN_TEAM[randNum].username, randScore)
-        }
-        else {
-            // console.log(randNum)
-            updateScore(RED_TEAM[randNum].username, randScore)
-        }
-    },500)
-}
+//         if(randNum >= 5) {
+//             randNum-=5
+//             // console.log(randNum)
+//             updateScore(GREEN_TEAM[randNum].username, randScore)
+//         }
+//         else {
+//             // console.log(randNum)
+//             updateScore(RED_TEAM[randNum].username, randScore)
+//         }
+//     },500)
+// }
 
 // DEBUG: Puts random messages into the event queue to see if it works.
 const DEBUG_FILL_EVENT = () => {
@@ -555,7 +585,7 @@ const DEBUG_FILL_EVENT = () => {
         }
 
         postEvent(P1.username, P2.username)
-    },500)
+    },1500)
 }
 
 
@@ -600,9 +630,12 @@ function messageHandler(msg) {
 //score_update; <timestamp>; <name>; <score>; <player_hit>
 function handleScoreUpdate(msgParts) {
     let timestamp = Number(msgParts[1]);
-    let name = msgParts[2];
+    let name = msgParts[2].trim();
     let score = Number(msgParts[3]);
-    let player_hit = msgParts[4];
+    let player_hit = msgParts[4].trim();
+
+
+    //updateScore(GREEN_TEAM[randNum].username, randScore)
 
     //do_something
     updateScore(name, score)
@@ -612,10 +645,11 @@ function handleScoreUpdate(msgParts) {
 //or base_capture; <timestamp>; <name>; <score>
 function handleBaseCapture(msgParts) {
     let timestamp = Number(msgParts[1]);
-    let name = msgParts[2];
+    let name = msgParts[2].trim();
     let score = Number(msgParts[3]);
 
     acknowledgeBaseCapture(name, score)
+    postBaseEvent(name)
 }
 
 //end_game; <timestamp>

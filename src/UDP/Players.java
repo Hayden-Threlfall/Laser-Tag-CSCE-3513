@@ -44,10 +44,16 @@ public class Players{
 
     //getters for sockets
     public int getScore(int equipmentID) {
+        if (players[equipmentID] == null) {
+            return -1;
+        }
         return players[equipmentID].score;
     }
 
     public String getCodeName(int equipmentID) {
+        if (players[equipmentID] == null) {
+            return null;
+        }
         return players[equipmentID].codeName;
     }
 
@@ -57,7 +63,8 @@ public class Players{
 
     public void clear() {
         for(int i = 0; i < 31; i++)
-            players[i].clear();
+            if (players[i] != null)
+                players[i].clear();
     }
 
 }
