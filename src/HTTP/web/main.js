@@ -211,7 +211,7 @@ inputFields.forEach(input => {
 });
 };
 
-const handleEnterPress = async function (equipmentId, playerId) {
+const handleEnterPress = async function (equipmentId, playerId, team) {
     try {
         await sendPlayerEntryById(equipmentId, playerId);
     } catch (error) {
@@ -225,6 +225,8 @@ const handleEnterPress = async function (equipmentId, playerId) {
         })
         
     }
+
+    //If successful 
 };
 
 const createTeamDiv = function(teamName) {
@@ -334,7 +336,7 @@ async function initializeActionScreen() {
     eventWindow = document.getElementById("eventWindow")
     
     // Get the player names to store in the arrays
-    playerNames = await getScores() //Returns a dict containins two dicts with usernames separated by team
+    playerNames = getScores() //Returns a dict containins two dicts with usernames separated by team
     console.log(playerNames)
     playerNames['red_scores'].forEach(user => {
         // user is a dict. Each key is a username and each value is a score.
@@ -345,7 +347,7 @@ async function initializeActionScreen() {
         GREEN_TEAM.push({'username':user.key, 'score':user[user.key]})
     })
 
-    DEBUG_FILL_PLAYER()
+    // DEBUG_FILL_PLAYER()
     displayScore()
     
     initializeTimer(30, acknowledgeGameEnd)
@@ -567,7 +569,7 @@ const DEBUG_FILL_EVENT = () => {
         }
 
         postEvent(P1.username, P2.username)
-    },500)
+    },1500)
 }
 
 
