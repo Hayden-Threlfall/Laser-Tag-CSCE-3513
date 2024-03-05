@@ -336,23 +336,29 @@ async function initializeActionScreen() {
     eventWindow = document.getElementById("eventWindow")
     
     // Get the player names to store in the arrays
-    playerNames = getScores() //Returns a dict containins two dicts with usernames separated by team
+    playerNames = await getScores() //Returns a dict containins two dicts with usernames separated by team
     console.log(playerNames)
-    playerNames['red_scores'].forEach(user => {
-        // user is a dict. Each key is a username and each value is a score.
-        // Append usernames to team array.
-        RED_TEAM.push({'username':user.key, 'score':user[user.key]})
-    })
-    playerNames['green_scores'].forEach(user => {
-        GREEN_TEAM.push({'username':user.key, 'score':user[user.key]})
-    })
+    for (const [name, score] of Object.entries(playerNames['red_scores'])) {
+        RED_TEAM.push({'username':name, 'score':score})
+    }
+    for (const [name, score] of Object.entries(playerNames['green_scores'])) {
+        GREEN_TEAM.push({'username':name, 'score':score})
+    }
+    // playerNames['red_scores'].forEach(user => {
+    //     // user is a dict. Each key is a username and each value is a score.
+    //     // Append usernames to team array.
+    //     RED_TEAM.push({'username':user.key, 'score':user[user.key]})
+    // })
+    // playerNames['green_scores'].forEach(user => {
+    //     GREEN_TEAM.push({'username':user.key, 'score':user[user.key]})
+    // })
 
     // DEBUG_FILL_PLAYER()
     displayScore()
     
     initializeTimer(30, acknowledgeGameEnd)
-    DEBUG_CHANGE_SCORES()
-    DEBUG_FILL_EVENT()
+    // DEBUG_CHANGE_SCORES()
+    // DEBUG_FILL_EVENT()
     let checkBase = setTimeout(() => {
         acknowledgeBaseCapture("Makoto", 1000)
     }, 10000)
