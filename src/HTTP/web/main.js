@@ -359,9 +359,9 @@ async function initializeActionScreen() {
     initializeTimer(30, acknowledgeGameEnd)
     // DEBUG_CHANGE_SCORES()
     // DEBUG_FILL_EVENT()
-    let checkBase = setTimeout(() => {
-        acknowledgeBaseCapture("Makoto", 1000)
-    }, 10000)
+    // let checkBase = setTimeout(() => {
+    //     acknowledgeBaseCapture("Makoto", 1000)
+    // }, 10000)
 }
 
 // Initializes a timer. Input is the length of the timer in seconds.
@@ -649,6 +649,7 @@ function handleBaseCapture(msgParts) {
     let score = Number(msgParts[3]);
 
     acknowledgeBaseCapture(name, score)
+    postBaseEvent(name)
 }
 
 //end_game; <timestamp>
