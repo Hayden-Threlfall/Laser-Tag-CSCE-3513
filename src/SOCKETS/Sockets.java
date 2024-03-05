@@ -144,7 +144,7 @@ public class Sockets extends WebSocketServer{
         ArrayList<String> red = new ArrayList<>();
 
         for (int i = 1; i < 31; i++) {
-            if(players.getCodeName(i) == null) {
+            if(players.getCodeName(i) != null) {
                 String entry = players.getCodeName(i) + ":" + Integer.toString(players.getScore(i));
                 //green
                 if (i % 2 == 0) {
