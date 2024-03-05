@@ -287,7 +287,7 @@ const clearAllEntries = function() {
 
 
 /* ACTION SCREEN */
-const initializeActionScreen = () => {
+async function initializeActionScreen() {
     let body = []
     body.push(`
     <div id="timerParent" style="text-align:center;">
@@ -311,6 +311,18 @@ const initializeActionScreen = () => {
     scoreWindowGreen = document.getElementById("scoreWindowGreen")
     eventWindow = document.getElementById("eventWindow")
     
+    // Get the player names to store in the arrays
+    playerNames = await getScores() //Returns a dict containins two dicts with usernames separated by team
+    console.log(playerNames)
+    playerNames['red_scores'].forEach(user => {
+        // user is a dict. Each key is a username and each value is a score.
+        // Append usernames to team array.
+        RED_TEAM.push({'username':user.key, 'score':user[user.key]})
+    })
+    playerNames['green_scores'].forEach(user => {
+        GREEN_TEAM.push({'username':user.key, 'score':user[user.key]})
+    })
+
     DEBUG_FILL_PLAYER()
     displayScore()
     
