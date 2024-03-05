@@ -620,9 +620,9 @@ function messageHandler(msg) {
 //score_update; <timestamp>; <name>; <score>; <player_hit>
 function handleScoreUpdate(msgParts) {
     let timestamp = Number(msgParts[1]);
-    let name = msgParts[2];
+    let name = msgParts[2].trim();
     let score = Number(msgParts[3]);
-    let player_hit = msgParts[4];
+    let player_hit = msgParts[4].trim();
 
     //do_something
     updateScore(name, score)
@@ -632,7 +632,7 @@ function handleScoreUpdate(msgParts) {
 //or base_capture; <timestamp>; <name>; <score>
 function handleBaseCapture(msgParts) {
     let timestamp = Number(msgParts[1]);
-    let name = msgParts[2];
+    let name = msgParts[2].trim();
     let score = Number(msgParts[3]);
 
     acknowledgeBaseCapture(name, score)
