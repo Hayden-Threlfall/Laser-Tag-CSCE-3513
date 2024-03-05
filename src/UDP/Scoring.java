@@ -1,11 +1,10 @@
 package UDP;
-//For the Hashtable
+
 import SOCKETS.Sockets;
-// import java.util.Hashtable;
+
 import java.util.Arrays;
 
 public class Scoring {
-    //Hashtable with player ids (which are actually equipment ids) as keys and point values as values
     // public Hashtable<Integer, Integer> players = new Hashtable<>();
     private Sockets Socket = null;
     //players will need to be initialized
@@ -51,12 +50,6 @@ public class Scoring {
         }
 
         if(!(player1 == -1 && player2 == -1)){
-            //check if players are in hashtable and add them if not
-            //-- shouldn't be necessary now with all info being pulled from front end --
-            // if(!(players.containsKey(player1) && players.containsKey(player2))) {
-            //     players.put(player1, 0);
-            //     players.put(player2, 0);   
-            // }
 
             //check if players on same team even/odd
             if(player1%2 == player2%2) {
@@ -67,25 +60,19 @@ public class Scoring {
             switch(player2){
                 //add base capture badge notification
                 case 43: //green base captured
-                    //System.out.println(players.get(player1)); //test code
                     Players.addScore(player1, 100);
                     Socket.update(player1, Players.getScore(player1), -1);
-                    //System.out.println(players.get(player1)); //test code
                 break;
 
                 case 53: //red base captured
-                    //System.out.println(players.get(player1)); //test code
                     Players.addScore(player1, 100);
                     Socket.update(player1, Players.getScore(player1), -1);
-                    //System.out.println(players.get(player1)); //test code
                 break;
 
                 default: //one player has hit another
-                    //System.out.println(players.get(player1)); //test code
                     Players.addScore(player1, 10);
                     Socket.update(player1, Players.getScore(player1), player2);
                     UDPSend.send(String.valueOf(player2));
-                    //System.out.println(players.get(player1)); //test code
                 break;
             }
 
@@ -96,18 +83,6 @@ public class Scoring {
 
     public void resetTable() {
         Players.clear();
-    }
-    
-    public static void main(String[] args) {
-        Scoring events = new Scoring();
-
-        // Test 1: Call pullInts with a sample string
-        String sampleString = "12:53";
-
-        // Test 2: Call update with the result from pullInts
-        for(int i = 0; i < 10; i++){
-            events.update(sampleString);
-        }
     }
 
 }
