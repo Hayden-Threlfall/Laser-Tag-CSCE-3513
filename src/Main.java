@@ -73,6 +73,12 @@ public class Main extends Thread{
                 break;
                 //System.exit(1);
             }
+
+            if (startGame) {
+                // 30 second setup timer1
+                startGame = false;
+                gameStartHelper();
+            }
         }
         
 
@@ -89,6 +95,7 @@ public class Main extends Thread{
 
     public static void end() {
         UDPSend.endGame();
+        socketServer.end();
     }
 
     public static void reset() {
@@ -96,9 +103,12 @@ public class Main extends Thread{
         Scores.resetTable();
     }
 
-
+    private static boolean startGame = false;
     public static void gameStart(){
-        // 30 second setup timer
+        startGame = true;
+    }
+
+    private static void gameStartHelper() { 
         try {
             Thread.sleep(30000);
         } catch (Exception e) {
@@ -106,20 +116,10 @@ public class Main extends Thread{
         }
 
         begin();
-
-        
-
         while(System.currentTimeMillis() <= endTime) {
             
         }
-
         end();
-        
-
-        while(true){ // Replace false with some sort of bool for resting
-            System.err.println();
-        }
-         // cleares table should be all this does
     }
 
 
