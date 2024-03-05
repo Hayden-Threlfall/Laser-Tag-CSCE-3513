@@ -319,8 +319,8 @@ async function initializeActionScreen() {
     </div>
     <br><br>
     <div style="text-align:center;">
-        <select id="scoreWindowRed" size="15" style="float:left; width:500px"></select>
-        <select id="scoreWindowGreen" size="15"  style="float:right; width:500px"></select>
+        <select id="scoreWindowRed" size="15" style="float:left; width:500px; color:red"></select>
+        <select id="scoreWindowGreen" size="15"  style="float:right; width:500px; color:green"></select>
     </div>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <div style="margin:auto;text-align:center;">
