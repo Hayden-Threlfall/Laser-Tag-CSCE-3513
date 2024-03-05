@@ -6,17 +6,20 @@ public class Players{
         public long playerID;
         public String codeName;
         public int score;
+        public boolean base;
 
         public Player(long playerID, String codeName) {
             this.playerID = playerID;
             this.codeName = codeName;
             this.score = 0;
+            this.base = false;
         }
 
         public void clear() {
             this.playerID = 0;
             this.codeName = null;
             this.score = 0;
+            this.base = false;
         }
     }
 
@@ -34,6 +37,10 @@ public class Players{
         players[equipmentID].score += scoreToAdd;
     }
 
+    public void setBase(int equipmentID){
+        players[equipmentID].base = true;
+    }
+
 
     //getters for sockets
     public int getScore(int equipmentID) {
@@ -42,6 +49,10 @@ public class Players{
 
     public String getCodeName(int equipmentID) {
         return players[equipmentID].codeName;
+    }
+
+    public boolean getBase(int equipmentID) {
+        return players[equipmentID].base;
     }
 
     public void clear() {
