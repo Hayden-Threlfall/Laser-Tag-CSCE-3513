@@ -504,6 +504,16 @@ const postEvent = (hitPlayer, attacker) => {
     option.scrollIntoView()
 }
 
+const postBaseEvent = (playerName) => {
+    let event = `Player ${playerName} captured the base!`
+    
+    let option = document.createElement('option')
+    option.value = event
+    option.innerHTML = event
+    eventWindow.appendChild(option)
+    option.scrollIntoView()
+}
+
 // When backend sends game start permession
 const acknowledgeGameStart = () => {
     //Initialize the action screen
@@ -526,26 +536,26 @@ const DEBUG_FILL_PLAYER = () => {
 }
 
 // DEBUG: Tests the various callback functions to make sure they work.
-const DEBUG_CHANGE_SCORES = () => {
-    let randNum = 0
-    let randScore = 0
-    let fillTimer = setInterval(() => {
-        randNum = Math.floor(Math.random() * 10)
-        randScore = Math.floor(Math.random() * 11)
-        // console.log(randNum)
-        // console.log(randScore)
+// const DEBUG_CHANGE_SCORES = () => {
+//     // let randNum = 0
+//     let randScore = 0
+//     let fillTimer = setInterval(() => {
+//         // randNum = Math.floor(Math.random() * 10)
+//         randScore = Math.floor(Math.random() * 11)
+//         // console.log(randNum)
+//         // console.log(randScore)
 
-        if(randNum >= 5) {
-            randNum-=5
-            // console.log(randNum)
-            updateScore(GREEN_TEAM[randNum].username, randScore)
-        }
-        else {
-            // console.log(randNum)
-            updateScore(RED_TEAM[randNum].username, randScore)
-        }
-    },500)
-}
+//         if(randNum >= 5) {
+//             randNum-=5
+//             // console.log(randNum)
+//             updateScore(GREEN_TEAM[randNum].username, randScore)
+//         }
+//         else {
+//             // console.log(randNum)
+//             updateScore(RED_TEAM[randNum].username, randScore)
+//         }
+//     },500)
+// }
 
 // DEBUG: Puts random messages into the event queue to see if it works.
 const DEBUG_FILL_EVENT = () => {
@@ -623,6 +633,9 @@ function handleScoreUpdate(msgParts) {
     let name = msgParts[2];
     let score = Number(msgParts[3]);
     let player_hit = msgParts[4];
+
+
+    //updateScore(GREEN_TEAM[randNum].username, randScore)
 
     //do_something
     updateScore(name, score)
