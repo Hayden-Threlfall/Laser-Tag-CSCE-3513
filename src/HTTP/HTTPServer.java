@@ -55,7 +55,7 @@ public class HTTPServer {
                 }
             } else {
                 //cut of the WEB_DIR/... part of the file path
-                String path = file.getPath().substring(web_dir.length());
+                String path = file.getPath().substring(web_dir.length()).replace("\\","/");
                 //create new handler for the request
                 StaticFile handler = new StaticFile(file);
                 //create the context at the path
