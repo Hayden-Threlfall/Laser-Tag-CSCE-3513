@@ -53,6 +53,7 @@ public class Scoring {
             //check if players on same team even/odd
             if(player1%2 == player2%2 && player2 != 53) {
                 UDPSend.send(Integer.toString(player1));
+                Players.addScore(player1, -10);
                 return;
             }
 
