@@ -1,5 +1,5 @@
 # run.ps1
-
+Push-Location
 # Change to the 'src' directory
 cd src
 
@@ -11,3 +11,5 @@ javac Main.java
 
 # Run the compiled Java program
 java Main
+
+Pop-Location
