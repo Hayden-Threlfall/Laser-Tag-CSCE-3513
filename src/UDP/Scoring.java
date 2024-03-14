@@ -34,8 +34,7 @@ public class Scoring {
     public void Players(Players players) {
         Players = players;
     }
-
-    //this is the method that should 
+ 
     public void update(String message) {
         int player1 = -1;
         int player2 = -1;
@@ -52,8 +51,9 @@ public class Scoring {
         if(!(player1 == -1 && player2 == -1)){
 
             //check if players on same team even/odd
-            if(player1%2 == player2%2) {
+            if(player1%2 == player2%2 && player2 != 53) {
                 UDPSend.send(Integer.toString(player1));
+                Players.addScore(player1, -10);
                 return;
             }
 
@@ -61,12 +61,15 @@ public class Scoring {
                 //add base capture badge notification
                 case 43: //green base captured
                     Players.addScore(player1, 100);
+                    Players.setBase(player1);
                     Socket.update(player1, Players.getScore(player1), -1);
                 break;
 
                 case 53: //red base captured
                     Players.addScore(player1, 100);
                     Socket.update(player1, Players.getScore(player1), -1);
+                    Players.setBase(player1);
+                    //System.out.println(players.get(player1)); //test code
                 break;
 
                 default: //one player has hit another

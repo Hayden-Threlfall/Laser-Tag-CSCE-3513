@@ -46,7 +46,8 @@ public class UDPReceive extends Thread{
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            if (running)
+                e.printStackTrace();
         }
     }
 

@@ -31,6 +31,13 @@ public class Sockets extends WebSocketServer{
     // private Scoring scores;
     private Players players;
     private Database database;
+
+    enum GameState {
+        SETUP,
+        RUNNING,
+        ENDED
+    }
+    private GameState gameState = GameState.SETUP;
     // private HashMap<Integer, PlayerInfo> players;
 
     public Sockets(int port, Scoring scores, Database database, Players players) throws UnknownHostException {
@@ -124,7 +131,25 @@ public class Sockets extends WebSocketServer{
     //  response; <status>
     //where status = waiting_for_start, in_play, or game_over
     public void getStatus(WebSocket socket, String[] message) {
-        this.sendResponse(socket, message[1], "waiting_for_start");
+
+        String responseMsg;
+        switch (gameState) {
+            case SETUP:
+                responseMsg = "waiting_for_start";
+                break;
+            case RUNNING:
+                responseMsg = "in_play";
+                break;
+            case ENDED:
+                responseMsg = "game_over";
+                break;
+            
+            default:
+                responseMsg = "waiting_for_start";
+                break;
+        }
+
+        this.sendResponse(socket, message[1], responseMsg);
         //socket.send("RESPONSE; " + message[1] + "; waiting_for_start");
     }
 
@@ -133,19 +158,23 @@ public class Sockets extends WebSocketServer{
     //response; <request_id>; <sucess/fail>; optional<fail_message>
     private void requestStart(WebSocket socket, String[] message) {
         //this.broadcast("acknowledged");
-
-        this.sendResponse(socket, message[1], "fail; not implemented");
+        if (gameState != GameState.RUNNING) {
+            this.sendResponse(socket, message[1], "success");
+        } else {
+            this.sendResponse(socket, message[1], "fail; game is already running");
+        }
     }
 
     //get_scores; <request_id>
-    //response; <request_id>; <timestamp>; GREEN; <name1>:<score1>, ... <name_n>:<score_n>; RED; same...
+    //response; <request_id>; <timestamp>; GREEN; <name1>:<score1>:<captured1?>, ... <name_n>:<score_n>:<captured_n?>; RED; same...
     private void getScores(WebSocket socket, String[] message) {
         ArrayList<String> green = new ArrayList<>();
         ArrayList<String> red = new ArrayList<>();
 
         for (int i = 1; i < 31; i++) {
             if(players.getCodeName(i) != null) {
-                String entry = players.getCodeName(i) + ":" + Integer.toString(players.getScore(i));
+                String entry = players.getCodeName(i) + ":" + Integer.toString(players.getScore(i))
+                    + ":" + (players.getBase(i) ? "true" : "false");
                 //green
                 if (i % 2 == 0) {
                     green.add(entry);
@@ -220,11 +249,13 @@ public class Sockets extends WebSocketServer{
 
     //start_game; <timestamp>
     public void startGame(long startTime) {
+        this.gameState = GameState.RUNNING;
         this.broadcast("start_game; " + startTime);
     }
     
     //end_game; <timestamp>
     public void end() {
+        this.gameState = GameState.ENDED;
         Date now = new Date();
         this.broadcast("end_game; " + now.getTime());
     }

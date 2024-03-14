@@ -338,11 +338,11 @@ async function initializeActionScreen() {
     // Get the player names to store in the arrays
     playerNames = await getScores() //Returns a dict containins two dicts with usernames separated by team
     console.log(playerNames)
-    for (const [name, score] of Object.entries(playerNames['red_scores'])) {
-        RED_TEAM.push({'username':name, 'score':score})
+    for (const [name, info] of Object.entries(playerNames['red_scores'])) {
+        RED_TEAM.push({'username':name, 'score':info.score})
     }
-    for (const [name, score] of Object.entries(playerNames['green_scores'])) {
-        GREEN_TEAM.push({'username':name, 'score':score})
+    for (const [name, info] of Object.entries(playerNames['green_scores'])) {
+        GREEN_TEAM.push({'username':name, 'score':info.score})
     }
     // playerNames['red_scores'].forEach(user => {
     //     // user is a dict. Each key is a username and each value is a score.
@@ -726,7 +726,7 @@ async function requestStart() {
 }
 
 //get_scores
-//<timestamp>; GREEN; <name1>:<score1>, ... <name_n>:<score_n>; RED; same...
+//<timestamp>; GREEN; <name1>:<score1>:<captured1?>, ... <name_n>:<score_n>:<captured2?>; RED; same...
 async function getScores() {
     let scores = await sendRequest("get_scores", "");
 
@@ -736,8 +736,12 @@ async function getScores() {
             let parts = player.split(":");
             let name = parts[0].trim();
             let score = Number(parts[1].trim());
+            let base_captured = parts[2].trim() == "true";
     
-            green_scores[name] = score;
+            green_scores[name] = {
+                score: score,
+                base_captured: base_captured
+            };
         }
     }
 
@@ -748,8 +752,12 @@ async function getScores() {
             let parts = player.split(":");
             let name = parts[0].trim();
             let score = Number(parts[1].trim());
+            let base_captured = parts[2].trim() == "true";
     
-            red_scores[name] = score;
+            red_scores[name] = {
+                score: score,
+                base_captured: base_captured
+            };
         }
     }
     

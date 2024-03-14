@@ -5,3 +5,5 @@ export CLASSPATH=.:../lib/*
 javac Main.java
 
 java Main
+
+cd ..
