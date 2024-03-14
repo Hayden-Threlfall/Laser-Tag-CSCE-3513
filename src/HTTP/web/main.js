@@ -180,7 +180,7 @@ const initializeEntryScreen = function() {
     document.addEventListener("keydown", function(event) {
         if (event.key === "F5") {
             document.getElementById("editScreen").style.display = "none";
-            frontendGameStart();
+            requestStart();
         } else if (event.key === "F1") {
             document.getElementById("editScreen").style.display = "block";
             document.getElementById("actionScreen").remove();
@@ -288,7 +288,7 @@ const handleButtonClick = function(event) {
         document.getElementById("actionScreen").remove();
     } else if (buttonText === "F5 Start Game") {
         document.getElementById("editScreen").style.display = "none";
-        requestStart();
+        frontendGameStart();
     } else if (buttonText === "F12 Clear Game") {
         // Clear all entries
         clearAllEntries();
@@ -444,6 +444,12 @@ const displayScore = () => {
     scoreWindowGreen.innerHTML = ""
 
     // Sort the scores in each array.
+    RED_TEAM.sort(function(a,b) {
+        return b.score - a.score
+    })
+    GREEN_TEAM.sort(function(a,b) {
+        return b.score - a.score
+    })
 
     // Iterate through each sorted array, writing their contents to the HTLM selects.
     RED_TEAM.forEach((element) => {
@@ -571,26 +577,26 @@ const DEBUG_FILL_PLAYER = () => {
 }
 
 // DEBUG: Tests the various callback functions to make sure they work.
-// const DEBUG_CHANGE_SCORES = () => {
-//     // let randNum = 0
-//     let randScore = 0
-//     let fillTimer = setInterval(() => {
-//         // randNum = Math.floor(Math.random() * 10)
-//         randScore = Math.floor(Math.random() * 11)
-//         // console.log(randNum)
-//         // console.log(randScore)
+const DEBUG_CHANGE_SCORES = () => {
+    let randNum = 0
+    let randScore = 0
+    let fillTimer = setInterval(() => {
+        randNum = Math.floor(Math.random() * 10)
+        randScore = Math.floor(Math.random() * 11)
+        // console.log(randNum)
+        // console.log(randScore)
 
-//         if(randNum >= 5) {
-//             randNum-=5
-//             // console.log(randNum)
-//             updateScore(GREEN_TEAM[randNum].username, randScore)
-//         }
-//         else {
-//             // console.log(randNum)
-//             updateScore(RED_TEAM[randNum].username, randScore)
-//         }
-//     },500)
-// }
+        if(randNum >= 5) {
+            randNum-=5
+            // console.log(randNum)
+            updateScore(GREEN_TEAM[randNum].username, randScore)
+        }
+        else {
+            // console.log(randNum)
+            updateScore(RED_TEAM[randNum].username, randScore)
+        }
+    },500)
+}
 
 // DEBUG: Puts random messages into the event queue to see if it works.
 const DEBUG_FILL_EVENT = () => {
