@@ -319,8 +319,8 @@ async function initializeActionScreen() {
     </div>
     <br><br>
     <div style="text-align:center;">
-        <select id="scoreWindowRed" size="15" style="float:left; width:500px; color:red"></select>
-        <select id="scoreWindowGreen" size="15"  style="float:right; width:500px; color:green"></select>
+        <select id="scoreWindowRed" size="15" style="float:left; width:500px; background:#900; color:#fff"></select>
+        <select id="scoreWindowGreen" size="15"  style="float:right; width:500px; background:#060; color:#fff"></select>
     </div>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <div style="margin:auto;text-align:center;">
@@ -356,7 +356,8 @@ async function initializeActionScreen() {
     // DEBUG_FILL_PLAYER()
     displayScore()
     
-    initializeTimer(30, acknowledgeGameEnd)
+    // After 30 second timer, starts another one that calls acknowledgeGameEnd.
+    initializePreGameTimer()
     // DEBUG_CHANGE_SCORES()
     // DEBUG_FILL_EVENT()
     // let checkBase = setTimeout(() => {
@@ -364,8 +365,9 @@ async function initializeActionScreen() {
     // }, 10000)
 }
 
-// Initializes a timer. Input is the length of the timer in seconds.
-const initializeTimer = (interval, func) => {
+// Initializes the 30s pregame timer. After, calls initializeGameTimer.
+const initializePreGameTimer = () => {
+    let interval = 3
 
     //Track current time for timer.
     let start = Date.now()
@@ -385,15 +387,48 @@ const initializeTimer = (interval, func) => {
 
         if(seconds > interval) {
             clearInterval(preGameTimer)
+            initializeGameTimer()
             // DEBUG_gameTimer()
             // acknowledgeGameEnd()
             // console.log('adsf')
         }
     },100)
 
-    let funcCall = setTimeout(() => {
-        func()
-    },interval*1000)
+    // let funcCall = setTimeout(() => {
+    //     // Call next timer function
+    //     initializeGameTimer()
+    // },interval*1000)
+}
+
+// Creates 6 minute timer. After, calls acknowledgeGameEnd() to print the return to entry screen button.
+const initializeGameTimer = () => {
+    let interval = 360
+
+    //Track current time for timer.
+    let start = Date.now()
+    let seconds = 0
+    let displayTime = 360
+
+    //Begin with 30s countdown until game begins, then 6 minute timer.
+    //Have <pr> display diff messages. Use functions.
+    let GameTimer = setInterval(() => {
+        document.getElementById("timer").innerHTML =   `00:${displayTime}`
+
+        // Get the number of seconds that have passed.
+        let diff = Date.now() - start
+        let secondsInMS = diff % (1000 * 60 * 60) //Get the number of seconds in milliseconds
+        seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
+        // console.log(seconds)
+        displayTime = 360 - seconds //seconds is counting up, so have displayTime count down
+
+        if(seconds > interval) {
+            clearInterval(GameTimer)
+            acknowledgeGameEnd()
+            // DEBUG_gameTimer()
+            // acknowledgeGameEnd()
+            // console.log('adsf')
+        }
+    },100)
 }
 
 //DEBUG: Displays when timer runs out.
