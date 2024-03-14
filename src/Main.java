@@ -31,7 +31,10 @@ public class Main extends Thread{
         UDPServer = new UDPReceive(Scores);
         UDPServer.start();
 
-        socketServer = new Sockets(8001, Scores, database, playerInfo);
+        Runnable gameStartFunc = () -> {
+            gameStart();
+        };
+        socketServer = new Sockets(8001, Scores, database, playerInfo, gameStartFunc);
         socketServer.start();
 
         httpServer = new HTTPServer();
