@@ -808,7 +808,7 @@ SOCKET.onopen = async () => {
             //waiting for start
             break;
         case "in_play":
-            acknowledgeGameEnd();
+            frontendGameStart();
             break;
         case "game_over":
             break;
