@@ -24,6 +24,7 @@ public class Main extends Thread{
     static Sockets socketServer;
     static HTTPServer httpServer;
 
+    public static boolean running = true;
     public static void main(String[] args) throws UnknownHostException,IOException, InterruptedException{    
         playerInfo = new Players();    
         database = new Database();
@@ -39,16 +40,15 @@ public class Main extends Thread{
         Scores.Sockets(socketServer);
         Scores.Players(playerInfo);
 
-        Scanner inp = new Scanner(System.in);
 
-
+        
         Thread hook = new Thread(() -> {
             try {
                 socketServer.stop(1);
                 httpServer.stop(1);
                 UDPServer.stop_processing();
-                inp.close();
-                System.exit(1);
+                running = false;
+                //System.exit(0);
             } catch (Exception e) {
                 //throw new Exception(e);
                 System.out.println("Failed to stop server!");
@@ -57,26 +57,16 @@ public class Main extends Thread{
         
         Runtime.getRuntime().addShutdownHook(hook);        
 
-        
-        System.out.println("enter close to exit");
-
-        while (true) {
-            String inp_str = inp.nextLine();
-
-            if (inp_str.equals("close")) {
-                
-                socketServer.stop(1);
-                httpServer.stop(1);
-                UDPServer.stop_processing();
-                inp.close();
-                Runtime.getRuntime().removeShutdownHook(hook);
-                break;
-                //System.exit(1);
+        while (running) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e){
+                e.printStackTrace();
             }
-
             if (startGame) {
                 // 30 second setup timer1
                 startGame = false;
+                startTime();
                 gameStartHelper();
             }
         }
@@ -117,7 +107,13 @@ public class Main extends Thread{
 
         begin();
         while(System.currentTimeMillis() <= endTime) {
-            
+            if (endTime - System.currentTimeMillis() > 1000) {
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
         end();
     }
