@@ -180,7 +180,7 @@ const initializeEntryScreen = function() {
     document.addEventListener("keydown", function(event) {
         if (event.key === "F5") {
             document.getElementById("editScreen").style.display = "none";
-            acknowledgeGameStart();
+            frontendGameStart();
         } else if (event.key === "F1") {
             document.getElementById("editScreen").style.display = "block";
             document.getElementById("actionScreen").remove();
@@ -288,7 +288,7 @@ const handleButtonClick = function(event) {
         document.getElementById("actionScreen").remove();
     } else if (buttonText === "F5 Start Game") {
         document.getElementById("editScreen").style.display = "none";
-        acknowledgeGameStart();
+        requestStart();
     } else if (buttonText === "F12 Clear Game") {
         // Clear all entries
         clearAllEntries();
@@ -550,7 +550,7 @@ const postBaseEvent = (playerName) => {
 }
 
 // When backend sends game start permession
-const acknowledgeGameStart = () => {
+const frontendGameStart = () => {
     //Initialize the action screen
     initializeActionScreen()
 }
@@ -696,6 +696,7 @@ function handleEndGame(msgParts) {
 //start_game; <timestamp>
 function handleStartGame(msgParts) {
     let timestamp = Number(msgParts[1]);
+    frontendGameStart();
 }
 
 //request is what is wanted (like get_status)
@@ -801,6 +802,7 @@ SOCKET.onopen = async () => {
             //waiting for start
             break;
         case "in_play":
+            acknowledgeGameEnd();
             break;
         case "game_over":
             break;
