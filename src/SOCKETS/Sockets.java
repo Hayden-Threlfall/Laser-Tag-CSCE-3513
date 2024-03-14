@@ -138,14 +138,15 @@ public class Sockets extends WebSocketServer{
     }
 
     //get_scores; <request_id>
-    //response; <request_id>; <timestamp>; GREEN; <name1>:<score1>, ... <name_n>:<score_n>; RED; same...
+    //response; <request_id>; <timestamp>; GREEN; <name1>:<score1>:<captured1?>, ... <name_n>:<score_n>:<captured_n?>; RED; same...
     private void getScores(WebSocket socket, String[] message) {
         ArrayList<String> green = new ArrayList<>();
         ArrayList<String> red = new ArrayList<>();
 
         for (int i = 1; i < 31; i++) {
             if(players.getCodeName(i) != null) {
-                String entry = players.getCodeName(i) + ":" + Integer.toString(players.getScore(i));
+                String entry = players.getCodeName(i) + ":" + Integer.toString(players.getScore(i))
+                    + ":" + (players.getBase(i) ? "true" : "false");
                 //green
                 if (i % 2 == 0) {
                     green.add(entry);
