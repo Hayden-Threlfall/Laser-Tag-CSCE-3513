@@ -656,7 +656,7 @@ function messageHandler(msg) {
             break;
         
         case "start_game":
-            handleEndGame(msgParts);
+            handleStartGame(msgParts);
             break;
         case "end_game":
             handleEndGame(msgParts);
@@ -811,6 +811,7 @@ SOCKET.onopen = async () => {
             frontendGameStart();
             break;
         case "game_over":
+            initializeEntryScreen();
             break;
     }
 }
