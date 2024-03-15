@@ -288,7 +288,7 @@ const handleButtonClick = function(event) {
         document.getElementById("actionScreen").remove();
     } else if (buttonText === "F5 Start Game") {
         document.getElementById("editScreen").style.display = "none";
-        frontendGameStart();
+        requestStart();
     } else if (buttonText === "F12 Clear Game") {
         // Clear all entries
         clearAllEntries();
