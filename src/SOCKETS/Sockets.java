@@ -31,6 +31,7 @@ public class Sockets extends WebSocketServer{
     // private Scoring scores;
     private Players players;
     private Database database;
+    private final Runnable gameStartMain;
 
     enum GameState {
         SETUP,
@@ -40,8 +41,10 @@ public class Sockets extends WebSocketServer{
     private GameState gameState = GameState.SETUP;
     // private HashMap<Integer, PlayerInfo> players;
 
-    public Sockets(int port, Scoring scores, Database database, Players players) throws UnknownHostException {
+    public Sockets(int port, Scoring scores, Database database, Players players, Runnable gameStartMain) throws UnknownHostException {
         super(new InetSocketAddress(port));
+
+        this.gameStartMain = gameStartMain;
 
         //actual values
         // this.scores = scores;
@@ -159,6 +162,7 @@ public class Sockets extends WebSocketServer{
     private void requestStart(WebSocket socket, String[] message) {
         //this.broadcast("acknowledged");
         if (gameState != GameState.RUNNING) {
+            this.gameStartMain.run();
             this.sendResponse(socket, message[1], "success");
         } else {
             this.sendResponse(socket, message[1], "fail; game is already running");

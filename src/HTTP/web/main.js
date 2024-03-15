@@ -646,6 +646,7 @@ let requests = {};
 function messageHandler(msg) {
     //lastMessage = msg;
     msgParts = msg.data.split(";");
+    console.log("new message: " + msg.data);
     switch (msgParts[0].toLowerCase()) {
         case "score_update":
             handleScoreUpdate(msgParts);
@@ -665,7 +666,6 @@ function messageHandler(msg) {
             delete requests[msgParts[1].trim()];
             break;
     }
-    console.log("new message: " + msg.data);
 }
 
 //score_update; <timestamp>; <name>; <score>; <player_hit>
