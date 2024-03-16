@@ -288,7 +288,7 @@ const handleButtonClick = function(event) {
         document.getElementById("actionScreen").remove();
     } else if (buttonText === "F5 Start Game") {
         document.getElementById("editScreen").style.display = "none";
-        requestStart();
+        frontendGameStart();
     } else if (buttonText === "F12 Clear Game") {
         // Clear all entries
         clearAllEntries();
@@ -366,7 +366,8 @@ async function initializeActionScreen() {
 }
 
 // Initializes the 30s pregame timer. After, calls initializeGameTimer.
-const initializePreGameTimer = () => {
+// Input is when the timer began
+const initializePreGameTimer = (timePassed) => {
     let interval = 3
 
     //Track current time for timer.
@@ -407,19 +408,23 @@ const initializeGameTimer = () => {
     //Track current time for timer.
     let start = Date.now()
     let seconds = 0
-    let displayTime = 360
+    let minutes = 0
+    let displaySeconds = 60
+    let displayMinutes = 6
 
     //Begin with 30s countdown until game begins, then 6 minute timer.
     //Have <pr> display diff messages. Use functions.
     let GameTimer = setInterval(() => {
-        document.getElementById("timer").innerHTML =   `00:${displayTime}`
+        document.getElementById("timer").innerHTML =   `0${displayMinutes}:${displaySeconds%60}`
 
         // Get the number of seconds that have passed.
         let diff = Date.now() - start
         let secondsInMS = diff % (1000 * 60 * 60) //Get the number of seconds in milliseconds
         seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
-        // console.log(seconds)
-        displayTime = 360 - seconds //seconds is counting up, so have displayTime count down
+        minutes = Math.floor(seconds / 60)
+        console.log(seconds)
+        displaySeconds = 60 - (seconds % 60) //seconds is counting up, so have displayTime count down
+        displayMinutes = 5 - minutes
 
         if(seconds > interval) {
             clearInterval(GameTimer)
@@ -656,7 +661,7 @@ function messageHandler(msg) {
             break;
         
         case "start_game":
-            handleStartGame(msgParts);
+            handleGame(msgParts);
             break;
         case "end_game":
             handleEndGame(msgParts);
@@ -801,22 +806,22 @@ async function sendPlayerEntryByName(equipmentID, playerID, playerCodeName) {
 }
 
 
-SOCKET.onopen = async () => {
-    switch (await getStatus()) {
-        case "waiting_for_start":
-            splashScreen()
-            //waiting for start
-            break;
-        case "in_play":
-            frontendGameStart();
-            break;
-        case "game_over":
-            initializeEntryScreen();
-            break;
-    }
-}
+// SOCKET.onopen = async () => {
+//     switch (await getStatus()) {
+//         case "waiting_for_start":
+//             splashScreen()
+//             //waiting for start
+//             break;
+//         case "in_play":
+//             frontendGameStart();
+//             break;
+//         case "game_over":
+//             initializeEntryScreen();
+//             break;
+//     }
+// }
 
 
 
 
-//splashScreen()
+splashScreen()
