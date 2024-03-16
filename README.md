@@ -8,17 +8,24 @@
 
 
 # Execution
-Project only runs on Linux and Windows machines with WSL. 
+Project runs on Linux and Windows via powershell 
 
 Requires a java development kit (jdk)
 
 In order to run with the database, the password environmental variable must be set
 
+(linux)
 ```
-set password=<password>
+export password=<password>
 ```
 
-To run, execute "./run.sh" in the main folder.
+(windows)
+```
+$env:password = <password>
+```
+
+To run, execute "./run.sh" in the main folder for linux or ./run.ps1 for powershell.
+
 
 # Use
-Once running, a link to a the website hosting the front end is provided. On this website, you can input all of your player's in each box. The first box is the player_id and the second their equipment_id. If their player_id isn't in the database, it will ask you for their name at the bottom. Please use a vpn that is not Global Protect (we reccomend Cloudflare WARP) when trying to run this project.
+Once running, a link to a the website hosting the front end is provided. On this website, you can input all of your player's in each box. The first box is the player_id and the second their equipment_id. If their player_id isn't in the database, it will ask you for their name at the bottom. Please use a vpn that is not Global Protect (we recomend Cloudflare WARP) when trying to run this project if you are on campus wifi.
