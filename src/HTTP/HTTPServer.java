@@ -79,9 +79,11 @@ public class HTTPServer {
         server.setExecutor(null); // creates a default executor
         server.start();
 
+        //open website on default browser
         System.out.println("HTTP Server start! http://localhost:" + serverPort + "/index.html");
         String os = System.getProperty("os.name").toLowerCase();
 
+        //open on linux
         if(os.indexOf("nix") >=0 || os.indexOf("nux") >=0) {
             Runtime rt = Runtime.getRuntime();
             String url = "http://localhost:" + serverPort + "/index.html";
@@ -98,6 +100,7 @@ public class HTTPServer {
 
             rt.exec(new String[] { "sh", "-c", cmd.toString() });
         }
+        //open on windows
         else {
             Runtime rt = Runtime.getRuntime();
             String url = "http://localhost:" + serverPort + "/index.html";
