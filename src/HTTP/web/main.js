@@ -251,7 +251,13 @@ const createTeamDiv = function(teamName) {
 
         // Number label
         const numberLabel = document.createElement("div");
-        numberLabel.textContent = i;
+        if (i < 10) {
+            numberLabel.textContent = `0${i}`;    
+        }
+        else {
+            numberLabel.textContent = `${i} `;
+        }
+        // numberLabel.textContent = `${i}`;
         entryRow.appendChild(numberLabel);
 
         // Player ID input
@@ -368,23 +374,29 @@ async function initializeActionScreen() {
 // Initializes the 30s pregame timer. After, calls initializeGameTimer.
 // Input is when the timer began
 const initializePreGameTimer = (timePassed) => {
-    let interval = 3
+    let interval = 1
 
     //Track current time for timer.
     let start = Date.now()
     let seconds = 0
-    let displayTime = 30
+    let displayTime = String(30)
 
     //Begin with 30s countdown until game begins, then 6 minute timer.
     //Have <pr> display diff messages. Use functions.
     let preGameTimer = setInterval(() => {
-        document.getElementById("timer").innerHTML =   `00:${displayTime}`
-
+        document.getElementById("timer").innerHTML =   `00:${displayTime.padStart(2,"0")}`
+        // if (displayTime > 9)
+        //     document.getElementById("timer").innerHTML =   `00:${displayTime}`
+        // else if (displayTime > 0 && displayTime < 10)
+        //     document.getElementById("timer").innerHTML =   `00:0${displayTime}`
+        // else
+        //     document.getElementById("timer").innerHTML =   `00:00`
         // Get the number of seconds that have passed.
         let diff = Date.now() - start
         let secondsInMS = diff % (1000 * 60) //Get the number of seconds in milliseconds
         seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
-        displayTime = 30 - seconds //seconds is counting up, so have displayTime count down
+        displayTime = String(30 - seconds) //seconds is counting up, so have displayTime count down
+        // displayTime = String(temp)
 
         if(seconds > interval) {
             clearInterval(preGameTimer)
@@ -409,22 +421,32 @@ const initializeGameTimer = () => {
     let start = Date.now()
     let seconds = 0
     let minutes = 0
-    let displaySeconds = 60
+    let displaySeconds = 0
     let displayMinutes = 6
 
     //Begin with 30s countdown until game begins, then 6 minute timer.
     //Have <pr> display diff messages. Use functions.
     let GameTimer = setInterval(() => {
-        document.getElementById("timer").innerHTML =   `0${displayMinutes}:${displaySeconds%60}`
-
+        document.getElementById("timer").innerHTML =   `0${displayMinutes}:${String(displaySeconds).padStart(2,"0")}`
+        // if (displaySeconds > 9 && displaySeconds < 60)
+        //     document.getElementById("timer").innerHTML =   `0${displayMinutes}:${displaySeconds}`
+        // else if (displaySeconds > 0 && displaySeconds < 10)
+        //     document.getElementById("timer").innerHTML =   `0${displayMinutes}:0${displaySeconds}`
+        // else if (displayMinutes > 0)
+        //     document.getElementById("timer").innerHTML =   `0${displayMinutes}:00`
+        // else
+        //     document.getElementById("timer").innerHTML =   `00:00`
         // Get the number of seconds that have passed.
         let diff = Date.now() - start
         let secondsInMS = diff % (1000 * 60 * 60) //Get the number of seconds in milliseconds
         seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
         minutes = Math.floor(seconds / 60)
-        console.log(seconds)
-        displaySeconds = 60 - (seconds % 60) //seconds is counting up, so have displayTime count down
+        // console.log(minutes)
         displayMinutes = 5 - minutes
+        displaySeconds = (60 - (seconds % 60)) % 60 //seconds is counting up, so have displayTime count down      
+
+        if (displaySeconds === 0)
+            displayMinutes++
 
         if(seconds > interval) {
             clearInterval(GameTimer)
@@ -806,22 +828,17 @@ async function sendPlayerEntryByName(equipmentID, playerID, playerCodeName) {
 }
 
 
-// SOCKET.onopen = async () => {
-//     switch (await getStatus()) {
-//         case "waiting_for_start":
-//             splashScreen()
-//             //waiting for start
-//             break;
-//         case "in_play":
-//             frontendGameStart();
-//             break;
-//         case "game_over":
-//             initializeEntryScreen();
-//             break;
-//     }
-// }
-
-
-
-
-splashScreen()
+SOCKET.onopen = async () => {
+    switch (await getStatus()) {
+        case "waiting_for_start":
+            splashScreen()
+            //waiting for start
+            break;
+        case "in_play":
+            frontendGameStart();
+            break;
+        case "game_over":
+            initializeEntryScreen();
+            break;
+    }
+}
