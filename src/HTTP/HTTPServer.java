@@ -123,6 +123,7 @@ public class HTTPServer {
             put("js", "text/javascript");
             put("ico", "image/vnd.microsoft.icon");
             put("jpg", "image/jpeg");
+            put("mp3", "audio/mpeg");
         }};
         //string of file data
         private final String data;
