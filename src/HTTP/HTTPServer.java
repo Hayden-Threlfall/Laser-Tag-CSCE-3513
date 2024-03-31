@@ -6,11 +6,15 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -61,17 +65,6 @@ public class HTTPServer {
                 StaticFile handler = new StaticFile(file);
                 //create the context at the path
                 server.createContext(path, handler);
-
-                //System.out.println("Path: " + path);
-
-                //if it's index.html, also bind it to / so you don't need /index.html
-                /*if (file.getName().equals("index.html")) {
-                    String rootPath = path.substring(0, path.length() - "index.html".length());
-                    System.out.println("root path: " + rootPath);
-                    server.createContext(rootPath, handler);
-                    System.out.println("Root Path: " + rootPath);
-
-                }*/
             }
         }
 
@@ -126,7 +119,7 @@ public class HTTPServer {
             put("mp3", "audio/mpeg");
         }};
         //string of file data
-        private final String data;
+        private final byte[] data;
         //the content-type
         private final String type;
 
@@ -146,22 +139,26 @@ public class HTTPServer {
                 this.type = TYPES.get(type);
             }
 
-            String data = "";
+            byte[] data = new byte[0];
             boolean failed = false;
             try {
                 //read in all of the file data
-                Scanner fileReader = new Scanner(file);
-                while (fileReader.hasNextLine()) {
-                    data += fileReader.nextLine() + "\n";
-                }
-                fileReader.close();
+
+                InputStream fileInput = new FileInputStream(file);
+                data = fileInput.readAllBytes();
+                fileInput.close();
             } catch (FileNotFoundException e) {
-                System.out.println("Failed to find file in HTTPServer!");
+                System.out.println("Failed to find file (" + file.getName() + ") in HTTPServer!");
                 e.printStackTrace();
 
                 failed = true;
+            } catch (IOException e) {
+                System.out.println("Failed to read file (" + file.getName() + ") in HTTPServer!");
+                e.printStackTrace();
+                failed = true;
             }
             this.data = data;
+            //.toPrimitive((Byte[])data.toArray());
             this.failed = failed;
         }
 
@@ -177,9 +174,9 @@ public class HTTPServer {
 
                 // Send a JSON response
                 exchange.getResponseHeaders().set("Content-Type", this.type);
-                exchange.sendResponseHeaders(200, this.data.length());
+                exchange.sendResponseHeaders(200, this.data.length);
                 OutputStream os = exchange.getResponseBody();
-                os.write(this.data.getBytes());
+                os.write(this.data);
                 os.close();
             } else {
                 // for other types, send invalid method
