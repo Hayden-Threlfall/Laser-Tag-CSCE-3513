@@ -325,8 +325,18 @@ async function initializeActionScreen() {
     </div>
     <br><br>
     <div style="text-align:center;">
-        <select id="scoreWindowRed" size="15" style="float:left; width:500px; background:#900; color:#fff"></select>
-        <select id="scoreWindowGreen" size="15"  style="float:right; width:500px; background:#060; color:#fff"></select>
+        <table id="scoreWindowRed" style="float:left;">
+            <tr>
+                <th scope="col">Username</th>
+                <th scope="col">Score</th>
+            </tr>
+        </table>
+        <table id="scoreWindowGreen" style="float:right;">
+            <tr>
+                <th >Username</th>
+                <th >Score</th>
+            </tr>
+        </table>
     </div>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <div style="margin:auto;text-align:center;">
@@ -334,6 +344,8 @@ async function initializeActionScreen() {
     </div>
     <button id="returnButton" onclick="initializeEntryScreen()" style="display:none">Back to input screen</button>`)
 
+    // <select id="scoreWindowRed" size="15" style="float:left; width:500px; background:#900; color:#fff"></select>
+    // <select id="scoreWindowGreen" size="15"  style="float:right; width:500px; background:#060; color:#fff"></select>
     document.body.innerHTML = body.join('')
 
     // Store the HTML element for the score menu
@@ -345,6 +357,12 @@ async function initializeActionScreen() {
     playerNames = await getScores() //Returns a dict containins two dicts with usernames separated by team
     console.log(playerNames)
     for (const [name, info] of Object.entries(playerNames['red_scores'])) {
+        //green_scores[name] = {
+        //     score: score,
+        //     base_captured: base_captured
+        // };
+        if (info.base_captured === 'true')
+            name = "{B} " + name
         RED_TEAM.push({'username':name, 'score':info.score})
     }
     for (const [name, info] of Object.entries(playerNames['green_scores'])) {
@@ -364,27 +382,27 @@ async function initializeActionScreen() {
     
     // After 30 second timer, starts another one that calls acknowledgeGameEnd.
     initializePreGameTimer()
-    // DEBUG_CHANGE_SCORES()
+    DEBUG_CHANGE_SCORES()
     // DEBUG_FILL_EVENT()
-    // let checkBase = setTimeout(() => {
-    //     acknowledgeBaseCapture("Makoto", 1000)
-    // }, 10000)
+    let checkBase = setTimeout(() => {
+        acknowledgeBaseCapture("Makoto", 1000)
+    }, 10000)
 }
 
 // Initializes the 30s pregame timer. After, calls initializeGameTimer.
 // Input is when the timer began
 const initializePreGameTimer = (timePassed) => {
-    let interval = 1
+    let interval = 30
 
     //Track current time for timer.
     let start = Date.now()
     let seconds = 0
-    let displayTime = String(30)
+    let displayTime = 30
 
     //Begin with 30s countdown until game begins, then 6 minute timer.
     //Have <pr> display diff messages. Use functions.
     let preGameTimer = setInterval(() => {
-        document.getElementById("timer").innerHTML =   `00:${displayTime.padStart(2,"0")}`
+        document.getElementById("timer").innerHTML =   `00:${String(displayTime).padStart(2,"0")}`
         // if (displayTime > 9)
         //     document.getElementById("timer").innerHTML =   `00:${displayTime}`
         // else if (displayTime > 0 && displayTime < 10)
@@ -395,7 +413,7 @@ const initializePreGameTimer = (timePassed) => {
         let diff = Date.now() - start
         let secondsInMS = diff % (1000 * 60) //Get the number of seconds in milliseconds
         seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
-        displayTime = String(30 - seconds) //seconds is counting up, so have displayTime count down
+        displayTime = 30 - seconds //seconds is counting up, so have displayTime count down
         // displayTime = String(temp)
 
         if(seconds > interval) {
@@ -467,8 +485,8 @@ const DEBUG_gameTimer = () => {
 // Takes the current team arrays, sorts them, and writes out their contents into the HTML element.
 const displayScore = () => {
     // Empty current scores.
-    scoreWindowRed.innerHTML = ""
-    scoreWindowGreen.innerHTML = ""
+    let redTable = "`<tr><th >Username</th><th >Score</th></tr>"
+    let greenTable = "`<tr><th >Username</th><th >Score</th></tr>"
 
     // Sort the scores in each array.
     RED_TEAM.sort(function(a,b) {
@@ -480,19 +498,30 @@ const displayScore = () => {
 
     // Iterate through each sorted array, writing their contents to the HTLM selects.
     RED_TEAM.forEach((element) => {
-        let option = document.createElement('option')
-        display = element.username + " ---------- " + element.score
-        option.value = display
-        option.innerHTML = display
-        scoreWindowRed.appendChild(option)
+        let row = `<tr><td>${element.username}</td><td>${element.score}</td></tr>`
+        redTable += row
     })
     GREEN_TEAM.forEach((element) => {
-        let option = document.createElement('option')
-        display = element.username + " ---------- " + element.score
-        option.value = display
-        option.innerHTML = display
-        scoreWindowGreen.appendChild(option)
+        let row = `<tr><td>${element.username}</td><td>${element.score}</td></tr>`
+        greenTable += row
     })
+
+    scoreWindowRed.innerHTML = redTable
+    scoreWindowGreen.innerHTML = greenTable
+    // RED_TEAM.forEach((element) => {
+    //     let option = document.createElement('option')
+        // display = element.username + " ---------- " + element.score
+    //     option.value = display
+    //     option.innerHTML = display
+    //     scoreWindowRed.appendChild(option)
+    // })
+    // GREEN_TEAM.forEach((element) => {
+    //     let option = document.createElement('option')
+    //     display = element.username + " ---------- " + element.score
+    //     option.value = display
+    //     option.innerHTML = display
+    //     scoreWindowGreen.appendChild(option)
+    // })
 }
 
 //End game. Stay on screen, but display a button that lets the user get back to the entry screen.
