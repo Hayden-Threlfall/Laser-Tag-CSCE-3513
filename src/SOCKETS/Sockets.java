@@ -32,6 +32,7 @@ public class Sockets extends WebSocketServer{
     private Players players;
     private Database database;
     private final Runnable gameStartMain;
+    private long startTime = 0;
 
     enum GameState {
         SETUP,
@@ -131,8 +132,9 @@ public class Sockets extends WebSocketServer{
 
     //get_status;
     //returns:
-    //  response; <status>
+    //  response; <status>; optional<start_time>
     //where status = waiting_for_start, in_play, or game_over
+    //and start_time is present if the game is in_play
     public void getStatus(WebSocket socket, String[] message) {
 
         String responseMsg;
@@ -141,7 +143,7 @@ public class Sockets extends WebSocketServer{
                 responseMsg = "waiting_for_start";
                 break;
             case RUNNING:
-                responseMsg = "in_play";
+                responseMsg = "in_play; " + this.startTime;
                 break;
             case ENDED:
                 responseMsg = "game_over";
@@ -254,6 +256,7 @@ public class Sockets extends WebSocketServer{
     //start_game; <timestamp>
     public void startGame(long startTime) {
         this.gameState = GameState.RUNNING;
+        this.startTime = startTime;
         this.broadcast("start_game; " + startTime);
     }
     

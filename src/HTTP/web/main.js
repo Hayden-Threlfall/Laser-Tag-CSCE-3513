@@ -775,7 +775,16 @@ function sendRequest(request, msg) {
 
 async function getStatus() {
     let status = await sendRequest("get_status","");
-    return status[0].trim();
+    let status_val = status[0].trim();
+    if (status_val == "in_play") {
+        return {
+            status: status_val,
+            start_time: Number(status[1].trim())
+        };
+    }
+    return {
+        status: status_val,
+    };
 }
 
 //request_start
@@ -858,13 +867,14 @@ async function sendPlayerEntryByName(equipmentID, playerID, playerCodeName) {
 
 
 SOCKET.onopen = async () => {
-    switch (await getStatus()) {
+    let status = await getStatus();
+    switch (status.status) {
         case "waiting_for_start":
             splashScreen()
             //waiting for start
             break;
         case "in_play":
-            frontendGameStart();
+            frontendGameStart(/*status.start_time*/);
             break;
         case "game_over":
             initializeEntryScreen();
