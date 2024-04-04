@@ -325,16 +325,16 @@ async function initializeActionScreen() {
     </div>
     <br><br>
     <div style="text-align:center;">
-        <table id="scoreWindowRed" style="float:left; width:45%; background:#900; color:#fff;">
+        <table id="scoreWindowRed" style="float:left; background:#900; color:#fff">
             <tr>
-                <th style="width:75%">Username</th>
-                <th>Score</th>
+                <th scope="col">Username</th>
+                <th scope="col">Score</th>
             </tr>
         </table>
-        <table id="scoreWindowGreen" style="float:right; width:45%; background:#060; color:#fff"">
+        <table id="scoreWindowGreen" style="float:right; background:#060; color:#fff"">
             <tr>
-                <th style="width:75%">Username</th>
-                <th>Score</th>
+                <th >Username</th>
+                <th >Score</th>
             </tr>
         </table>
     </div>
@@ -485,8 +485,8 @@ const DEBUG_gameTimer = () => {
 // Takes the current team arrays, sorts them, and writes out their contents into the HTML element.
 const displayScore = () => {
     // Empty current scores.
-    let redTable = '<tr><th style="width:75%">Username</th><th>Score</th></tr>'
-    let greenTable = '<tr><th style="width:75%">Username</th><th>Score</th></tr>'
+    let redTable = "<tr><th >Username</th><th >Score</th></tr>"
+    let greenTable = "<tr><th >Username</th><th >Score</th></tr>"
 
     // Sort the scores in each array.
     RED_TEAM.sort(function(a,b) {
