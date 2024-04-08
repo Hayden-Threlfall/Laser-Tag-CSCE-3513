@@ -315,6 +315,12 @@ const clearAllEntries = function() {
     });
 };
 
+function startMusic(){
+    var trackNum = Math.random().parseInt() % 8;
+    var track = new Audio('Track0'+ trackNum + '.mp3');
+    track.play()
+}
+
 
 /* ACTION SCREEN */
 async function initializeActionScreen() {
@@ -390,7 +396,7 @@ async function initializeActionScreen() {
     // DEBUG_FILL_PLAYER()
     displayScore()
     // updateScore("Hayden", 100)
-    
+    startMusic()
     // After 30 second timer, starts another one that calls acknowledgeGameEnd.
     initializePreGameTimer()
     // DEBUG_CHANGE_SCORES()
