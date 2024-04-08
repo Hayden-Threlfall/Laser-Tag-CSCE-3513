@@ -325,17 +325,25 @@ async function initializeActionScreen() {
     </div>
     <br><br>
     <div style="text-align:center;">
-        <table id="scoreWindowRed" style="float:left; width:45%; background:#900; color:#fff;">
-            <tr>
-                <th style="width:75%">Username</th>
-                <th>Score</th>
-            </tr>
+        <table id="redTable" class="head" style="float:left; width:45%; background-color:#900; color:#fff; border-spacing:0px">
+            <thead>
+                <tr class="head">
+                    <th style="width:80%">Username</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody id="scoreWindowRed">
+            </tbody>
         </table>
-        <table id="scoreWindowGreen" style="float:right; width:45%; background:#060; color:#fff"">
-            <tr>
-                <th style="width:75%">Username</th>
-                <th>Score</th>
-            </tr>
+        <table id="greenTable" style="float:right; width:45%; background-color:#060; color:#fff; border-spacing:0px">
+            <thead>    
+                <tr style="top:5px;">
+                    <th style="width:80%">Username</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody id="scoreWindowGreen">
+            </tbody>
         </table>
     </div>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
@@ -355,7 +363,7 @@ async function initializeActionScreen() {
     
     // Get the player names to store in the arrays
     playerNames = await getScores() //Returns a dict containins two dicts with usernames separated by team
-    console.log(playerNames)
+    // console.log(playerNames)
     for (const [name, info] of Object.entries(playerNames['red_scores'])) {
         //green_scores[name] = {
         //     score: score,
@@ -366,6 +374,8 @@ async function initializeActionScreen() {
         RED_TEAM.push({'username':name, 'score':info.score})
     }
     for (const [name, info] of Object.entries(playerNames['green_scores'])) {
+        if (info.base_captured === 'true')
+            name = "{B} " + name
         GREEN_TEAM.push({'username':name, 'score':info.score})
     }
     // playerNames['red_scores'].forEach(user => {
@@ -379,14 +389,15 @@ async function initializeActionScreen() {
 
     // DEBUG_FILL_PLAYER()
     displayScore()
+    // updateScore("Hayden", 100)
     
     // After 30 second timer, starts another one that calls acknowledgeGameEnd.
     initializePreGameTimer()
     // DEBUG_CHANGE_SCORES()
     // DEBUG_FILL_EVENT()
-    let checkBase = setTimeout(() => {
-        acknowledgeBaseCapture("Makoto", 1000)
-    }, 10000)
+    // let checkBase = setTimeout(() => {
+    //     acknowledgeBaseCapture("Makoto", 1000)
+    // }, 10000)
 }
 
 // Initializes the 30s pregame timer. After, calls initializeGameTimer.
@@ -482,12 +493,33 @@ const DEBUG_gameTimer = () => {
     console.log("finished timer")
 }
 
-// Takes the current team arrays, sorts them, and writes out their contents into the HTML element.
+// const animateSort = (team_array) => {
+//     let rowTop = 0
+//     $.each(team_array, (index) => {
+//         let username = team_array[index].username
+//         let $tableCell = $('tbody tr#'+username)
+
+
+
+//         $(`#${username}Score`).text(`${team_array[index].score}`)
+        
+//         // Animate cell to scroll to correct position
+//         $tableCell.animate({
+//             backgroundColor: '#900',
+//             position: 'absolute',
+//             top: rowTop+'px',
+//         }, 500)
+
+//         rowTop += $tableCell.outerHeight()
+//     })
+// }
+
+// Fills the scoreboard. Sorts it in case it is mid-game.
 const displayScore = () => {
     // Empty current scores.
-    let redTable = '<tr><th style="width:75%">Username</th><th>Score</th></tr>'
-    let greenTable = '<tr><th style="width:75%">Username</th><th>Score</th></tr>'
-
+    let redTable = ''
+    let greenTable = ''
+    
     // Sort the scores in each array.
     RED_TEAM.sort(function(a,b) {
         return b.score - a.score
@@ -498,31 +530,118 @@ const displayScore = () => {
 
     // Iterate through each sorted array, writing their contents to the HTLM selects.
     RED_TEAM.forEach((element) => {
-        let row = `<tr><td>${element.username}</td><td>${element.score}</td></tr>`
+        let row = `<tr id="${element.username}"><td style="width:80%">${element.username}</td><td id="${element.username}Score">${element.score}</td></tr>`
         redTable += row
+        element.$html = $(`${row}`)
     })
     GREEN_TEAM.forEach((element) => {
-        let row = `<tr><td>${element.username}</td><td>${element.score}</td></tr>`
+        let row = `<tr id="${element.username}"><td style="width:80%">${element.username}</td><td id="${element.username}Score">${element.score}</td></tr>`
         greenTable += row
+        element.$html = $(`${row}`)
     })
 
     scoreWindowRed.innerHTML = redTable
     scoreWindowGreen.innerHTML = greenTable
-    // RED_TEAM.forEach((element) => {
-    //     let option = document.createElement('option')
-        // display = element.username + " ---------- " + element.score
-    //     option.value = display
-    //     option.innerHTML = display
-    //     scoreWindowRed.appendChild(option)
-    // })
-    // GREEN_TEAM.forEach((element) => {
-    //     let option = document.createElement('option')
-    //     display = element.username + " ---------- " + element.score
-    //     option.value = display
-    //     option.innerHTML = display
-    //     scoreWindowGreen.appendChild(option)
-    // })
 }
+
+
+// Takes the current team arrays, sorts them, and writes out their contents into the HTML element.
+// const displayScore = () => {
+//     // Empty current scores.
+//     // let redTable = '<tr><th style="width:80%">Username</th><th>Score</th></tr>'
+//     // let greenTable = '<tr><th style="width:80%">Username</th><th>Score</th></tr>'
+//     // let tableTop = document.getElementById("scoreWindowRed").getBoundingClientRect().top
+
+//     // console.log(`${tableTop}`)
+
+//     // Sort the scores in each array.
+//     // let redTable = ''
+//     // let greenTable = ''
+    
+//     // Sort the scores in each array.
+//     RED_TEAM.sort(function(a,b) {
+//         return b.score - a.score
+//     })
+//     GREEN_TEAM.sort(function(a,b) {
+//         return b.score - a.score
+//     })
+
+//     animateSort(RED_TEAM)
+
+//     // Iterate through each sorted array, writing their contents to the HTLM selects.
+//     // let rowHeight = $(`#redTable`).height()
+//     // // let y = rowHeight
+//     // // // for (let i = 0; i<RED_TEAM.length; i++) {
+//     // // //     // $(`#${RED_TEAM[i].username}`).css("top", y+"px")
+//     // // //     // $(`#${RED_TEAM[i].username}`)
+//     // // //     // .find('div')
+//     // // //     // .animate({top:y+"px"}, 500, () => {
+//     // // //     //     $(this).parent().parent().remove()
+//     // // //     // })
+//     // // //     // console.log(y)
+//     // // //     y += rowHeight
+//     // // // }
+//     // RED_TEAM.forEach((element) => {
+//     //     let row = `<tr id="${element.username}"><td>${element.username}</td><td>${element.score}</td></tr>`
+//     //     redTable += row
+//     // })
+//     // GREEN_TEAM.forEach((element) => {
+//     //     let row = `<tr id="${element.username}"><td>${element.username}</td><td>${element.score}</td></tr>`
+//     //     greenTable += row
+//     // })
+
+//     // scoreWindowRed.innerHTML = redTable
+//     // scoreWindowGreen.innerHTML = greenTable
+
+//     // let j = 2
+//     // RED_TEAM.forEach((element) => {
+//     //     let height = document.getElementsByTagName("table")[0].rows.height
+//     //     console.log(height)
+//     //     for (let i = 0; i < redRows.length; i++) {
+//     //         // const line = redRows[i]
+//     //         const line = document.getElementById(`${element.username}`)
+//     //         if(element.username === line.id) {
+//     //             line.innerHTML = `<td>${element.username}</td><td>${element.score}</td>`
+//     //             const rowHeight = line.getBoundingClientRect().height
+//     //             line.style = `top: ${rowHeight*j}px`
+//     //             j++
+//     //         }
+//     //     }
+//     // })
+
+//     // for (let i = 0; i < redRows.length; i++) {
+//     //     const line = redRows[i]
+//     //     const rowTop = line.getBoundingClientRect().top
+//     //     console.log(line.id)
+
+//     //     //IDEA: Go through each item in RED_TEAM, and check if they match. If so, do "top: rowHeight*y"
+//     //     // if(line.id === "") continue
+//     //     let j = 1
+//     //     RED_TEAM.forEach((element) => {
+//     //         if(element.username === line.id) {
+                
+//     //         }
+//     //         j++
+//     //     })
+
+//     //     // line.style.transform = `translateY(${position * line.offsetHeight})`
+//     // }
+
+//     // RED_TEAM.forEach((element) => {
+//     //     let option = document.createElement('option')
+//         // display = element.username + " ---------- " + element.score
+//     //     option.value = display
+//     //     option.innerHTML = display
+//     //     scoreWindowRed.appendChild(option)
+//     // })
+//     // GREEN_TEAM.forEach((element) => {
+//     //     let option = document.createElement('option')
+//     //     display = element.username + " ---------- " + element.score
+//     //     option.value = display
+//     //     option.innerHTML = display
+//     //     scoreWindowGreen.appendChild(option)
+//     // })
+// }
 
 //End game. Stay on screen, but display a button that lets the user get back to the entry screen.
 const acknowledgeGameEnd = () => {
@@ -537,14 +656,14 @@ const acknowledgeBaseCapture = (username, newScore) => {
     // Find the player and modify their username with the base change.
     RED_TEAM.forEach((element) => {
         if (element.username == username) {
-            let newUsername = "[B] " + element.username
+            let newUsername = "[ℬ] " + element.username
             element.username = newUsername
             element.score = newScore
         }
     })
     GREEN_TEAM.forEach((element) => {
         if (element.username == username) {
-            let newUsername = "[B] " + element.username
+            let newUsername = "[ℬ] " + element.username
             element.username = newUsername
             element.score = newScore
         }
