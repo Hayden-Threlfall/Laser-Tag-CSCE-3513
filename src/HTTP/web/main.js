@@ -316,7 +316,7 @@ const clearAllEntries = function() {
 };
 
 function startMusic(){
-    var trackNum = Math.random().parseInt() % 8;
+    var trackNum = parseint((Math.random()*8)% 8, 10);
     var track = new Audio('Track0'+ trackNum + '.mp3');
     track.play()
 }
