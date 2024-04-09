@@ -1,7 +1,7 @@
 # run.ps1
 Push-Location
 # Change to the 'src' directory
-cd src
+Set-Location src
 
 # Set the CLASSPATH
 $env:CLASSPATH = ".;../lib/*"
