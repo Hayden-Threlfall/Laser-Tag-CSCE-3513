@@ -79,7 +79,7 @@ public class Main extends Thread{
     }
 
     public static void startTime() {
-        endTime = System.currentTimeMillis() + 36000 + 3000;
+        endTime = System.currentTimeMillis() + 360000 + 30000;
         socketServer.startGame(System.currentTimeMillis());
     }
 
