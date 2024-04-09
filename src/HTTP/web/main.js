@@ -331,19 +331,6 @@ async function initializeActionScreen() {
     </div>
     <br><br>
     <div style="text-align:center;">
-<<<<<<< HEAD
-        <table id="scoreWindowRed" style="float:left; background:#900; color:#fff">
-            <tr>
-                <th scope="col">Username</th>
-                <th scope="col">Score</th>
-            </tr>
-        </table>
-        <table id="scoreWindowGreen" style="float:right; background:#060; color:#fff"">
-            <tr>
-                <th >Username</th>
-                <th >Score</th>
-            </tr>
-=======
         <table id="redTable" class="head" style="float:left; width:45%; background-color:#900; color:#fff; border-spacing:0px">
             <thead>
                 <tr class="head">
@@ -363,7 +350,6 @@ async function initializeActionScreen() {
             </thead>
             <tbody id="scoreWindowGreen">
             </tbody>
->>>>>>> 2783d4af2d07ad50e38f40c03f8483c902f25630
         </table>
     </div>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
