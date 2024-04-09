@@ -396,7 +396,7 @@ async function initializeActionScreen() {
     // DEBUG_FILL_PLAYER()
     displayScore()
     // updateScore("Hayden", 100)
-    startMusic()
+    //startMusic()
     // After 30 second timer, starts another one that calls acknowledgeGameEnd.
     initializePreGameTimer()
     // DEBUG_CHANGE_SCORES()

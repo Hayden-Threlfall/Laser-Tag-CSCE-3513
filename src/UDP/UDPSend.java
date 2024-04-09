@@ -15,7 +15,7 @@ public class UDPSend {
             InetAddress address = InetAddress.getByName(ADDRESS);
 
             // Create a DatagramSocket to send UDP packets on the specified port
-            DatagramSocket socket = new DatagramSocket(PORT);
+            DatagramSocket socket = new DatagramSocket();
 
             //Turning string into byte code for packet
             byte[] buffer = message.getBytes();

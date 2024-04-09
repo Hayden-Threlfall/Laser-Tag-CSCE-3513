@@ -63,12 +63,16 @@ public class Scoring {
                     Players.addScore(player1, 100);
                     Players.setBase(player1);
                     Socket.update(player1, Players.getScore(player1), -1);
+
+                    UDPSend.send(String.valueOf(43));
                 break;
 
                 case 53: //red base captured
                     Players.addScore(player1, 100);
                     Socket.update(player1, Players.getScore(player1), -1);
                     Players.setBase(player1);
+
+                    UDPSend.send(String.valueOf(53));
                     //System.out.println(players.get(player1)); //test code
                 break;
 
