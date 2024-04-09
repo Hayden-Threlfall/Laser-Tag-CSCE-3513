@@ -837,7 +837,7 @@ function messageHandler(msg) {
             break;
         
         case "start_game":
-            handleGame(msgParts);
+            handleStartGame(msgParts);
             break;
         case "end_game":
             handleEndGame(msgParts);
