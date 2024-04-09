@@ -68,7 +68,7 @@ public class Main extends Thread{
             }
             if (startGame) {
                 // 30 second setup timer1
-                reset();
+                //reset();
                 startGame = false;
                 startTime();
                 gameStartHelper();
