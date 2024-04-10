@@ -12,7 +12,6 @@ let RED_TEAM = []
 let scoreWindowRed
 let scoreWindowGreen
 let eventWindow
-
 /* FUNCTIONS */
 /* SPLASH SCREEN */
 const splashScreen = () => {
@@ -23,6 +22,8 @@ const splashScreen = () => {
     logo.style.height = "100%"
     logo.style.width = "100%"
     logo.style.objectFit = "cover"
+    // const background = document.getElementById("body");
+    // background.style.backgroundImage = "background.jpg";
 
     document.body.appendChild(logo)
 
@@ -125,8 +126,15 @@ const initializeEntryScreen = function() {
 
     // Header
     const header = document.createElement("h1");
-    header.style.color = "purple";
+    header.style.color = "yellow";
+    header.style.fontSize = "70px"
     header.style.textAlign = "center";
+    header.style.textShadow = "0 0 12px white";
+    header.style.webkitTextStrokeWidth = "2px";
+    header.style.webkitTextStrokeColor = "black";
+    header.style.margin = "0";
+    header.style.padding = "0";
+    header.style.fontFamily = "Courier";
     header.textContent = "Player Entry";
     editScreenDiv.appendChild(header);
 
@@ -231,14 +239,22 @@ const handleEnterPress = async function (equipmentId, playerId, team) {
 
 const createTeamDiv = function(teamName) {
     const teamDiv = document.createElement("div");
-    teamDiv.style.backgroundColor = teamName === "Red Team" ? "darkred" : "darkgreen";
+    teamDiv.style.backgroundColor = teamName === "Red Team" ? "red" : "rgb(31,207,49)";
     teamDiv.style.width = "45%";
     teamDiv.style.padding = "10px";
+    teamDiv.style.boxShadow = teamName === "Red Team" ? "0 0 50px red" : "0 0 50px rgb(31,207,49)";
 
     // Header
     const header = document.createElement("h2");
     header.style.color = "white";
+    header.style.textShadow = "0 0 20px white";
+    // header.style.webkitTextStrokeWidth = "0.5px";
+    // header.style.webkitTextStrokeColor = "black";
+    header.style.fontSize = "40px";
+    header.style.margin = "15px";
+    header.style.padding = "2px";
     header.textContent = teamName;
+    header.style.fontFamily = "Courier";
     teamDiv.appendChild(header);
 
     // Entries
