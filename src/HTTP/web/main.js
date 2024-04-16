@@ -1,4 +1,4 @@
-//per entry box1=userID, box2=equipmentID. press ENTER to send to backend
+//press ENTER to send to backend
 /* GLOBAL VARIABLES */
 // List of players. Stores dicts for each player, containing their name, ID, and current score.
 let GREEN_TEAM = []
@@ -7,8 +7,7 @@ let RED_TEAM = []
     username:'str',
     playerID:int,
     score:int,
-    team:int  
-*/
+    team:int */
 let scoreWindowRed
 let scoreWindowGreen
 let eventWindow
@@ -36,85 +35,6 @@ const splashScreen = () => {
 let playerName = ""; // Initialize playerName variable
 
 /* FUNCTIONS */
-
-// Function to create and display the popup
-const createPlayerNamePopup = () => {
-    //promise to return name/cancel
-    return new Promise((resolve, reject) => {
-        // Create elements
-        const modal = document.createElement("div");
-        modal.classList.add("modal");
-
-        const modalContent = document.createElement("div");
-        modalContent.classList.add("modal-content");
-
-        const modalHeader = document.createElement("div");
-        modalHeader.classList.add("modal-header");
-
-        const closeBtn = document.createElement("span");
-        closeBtn.classList.add("close");
-        closeBtn.innerHTML = "&times;"; // Unicode for 'x' symbol
-        closeBtn.addEventListener("click", () => {
-            //should probably reformat to not use errors as control flow
-            reject("cancelled");
-            closeModal(modal);
-        });
-
-        const headerText = document.createElement("h2");
-        headerText.textContent = "No player found, please enter player name";
-
-        modalHeader.appendChild(closeBtn);
-        modalHeader.appendChild(headerText);
-
-        const modalBody = document.createElement("div");
-        modalBody.classList.add("modal-body");
-
-        const playerNameInput = document.createElement("input");
-        playerNameInput.setAttribute("type", "text");
-        playerNameInput.setAttribute("id", "playerNameInput");
-        playerNameInput.setAttribute("maxlength", "10");
-        playerNameInput.setAttribute("placeholder", "Enter player name (max 10 characters)");
-
-        modalBody.appendChild(playerNameInput);
-
-        const modalFooter = document.createElement("div");
-        modalFooter.classList.add("modal-footer");
-
-        const cancelButton = document.createElement("button");
-        cancelButton.textContent = "Cancel";
-        cancelButton.addEventListener("click", () => {
-            reject("cancelled");
-            closeModal(modal);
-        });
-
-        const okButton = document.createElement("button");
-        okButton.textContent = "OK";
-        okButton.addEventListener("click", () => {
-            playerName = playerNameInput.value.trim();
-            console.log("Player name entered:", playerName);
-            //return playerName
-            resolve(playerName);
-            closeModal(modal);
-        });
-
-        modalFooter.appendChild(cancelButton);
-        modalFooter.appendChild(okButton);
-
-        modalContent.appendChild(modalHeader);
-        modalContent.appendChild(modalBody);
-        modalContent.appendChild(modalFooter);
-
-        modal.appendChild(modalContent);
-
-        // Append modal to body
-        document.body.appendChild(modal);
-    });
-};
-
-// Function to close the modal
-const closeModal = (modal) => {
-    modal.style.display = "none";
-};
 
 /* PLAYER SCREEN */
 const initializeEntryScreen = function() {
@@ -162,7 +82,6 @@ const initializeEntryScreen = function() {
         "F1 Edit Game",
         "F2 Game Parameters",
         "F5 Start Game",
-        "F7",
         "F8 View Game",
         "F10 Flick Sync",
         "F12 Clear Game"
@@ -201,42 +120,56 @@ const initializeEntryScreen = function() {
         }
     });
 
-// Add event listeners to all input fields to capture Enter key press
-const inputFields = document.querySelectorAll("#editScreen input[type='text']");
-inputFields.forEach(input => {
-    input.addEventListener("keyup", function (event) {
-        if (event.key === "Enter") {
-            const entryRow = this.parentElement;
-            const playerIdInput = entryRow.querySelector("input[type='text'][maxlength='10']:nth-child(2)"); // Select the first input for player ID
-            const equipmentIdInput = entryRow.querySelector("input[type='text'][maxlength='10']:nth-child(3)"); // Select the second input for equipment ID
-            
-            const playerId = playerIdInput.value.trim();
-            const equipmentId = equipmentIdInput.value.trim();
-           
-            handleEnterPress(equipmentId, playerId);
-        }
+    // Add event listeners to all input fields to capture Enter key press
+    const inputFields = document.querySelectorAll("#editScreen input[type='text']");
+    inputFields.forEach(input => {
+        input.addEventListener("keyup", function (event) {
+            if (event.key === "Enter") {
+                const entryRow = this.parentElement;
+                const playerIdInput = entryRow.getElementsByClassName("playerID")[0]; // Player ID input is the current input field
+                const playerId = playerIdInput.value.trim();
+
+                // Determine the equipment ID based on the row label and team color
+                const equipmentIdLabel = entryRow.querySelector("div:first-child"); // Select the first child (label) of the entry row
+                const equipmentId = equipmentIdLabel.textContent.padStart(2, '0'); // Extract the equipment ID from the label
+
+                handleEnterPress(equipmentId, playerId);
+            }
+        });
     });
-});
 };
 
 const handleEnterPress = async function (equipmentId, playerId, team) {
-    try {
-        await sendPlayerEntryById(equipmentId, playerId);
-    } catch (error) {
-        // Handle error
-        console.error(error);
-        // Get player name somehow
-        createPlayerNamePopup().then(async (playerName) => {
-            await sendPlayerEntryByName(equipmentId, playerId, playerName);
-        }).catch((err) => {
-            //do nothing, only error is cancelation
-        })
-        
+    const codenameInput = document.getElementById("codename-" + Number(equipmentId));
+    if (codenameInput.disabled) {
+        const playerIDInput = document.getElementById("playerID-" + Number(equipmentId));
+        playerIDInput.disabled = true;
+        playerIDInput.style.backgroundColor = "white";
+        try {
+            await sendPlayerEntryById(Number(equipmentId), Number(playerId));
+        } catch (error) {
+            // Handle error
+            console.error(error);
+            // Enable the Codename input associated with the failed entry
+            enableCodenameInput(equipmentId);
+            
+        }
+    } else {
+        await sendPlayerEntryByName(Number(equipmentId), playerId, codenameInput.value);
+        codenameInput.disabled = true;
     }
 
     //If successful 
 };
 
+const enableCodenameInput = function (equipmentId) {
+    //const codenameInput = document.querySelector(`#editScreen input[type='text'][value='${equipmentId}'] + input[type='text']`);
+    const codenameInput = document.getElementById("codename-" + Number(equipmentId));
+    codenameInput.disabled = false;
+    codenameInput.style.backgroundColor = "white";
+};
+
+const codenameInputs = {};
 const createTeamDiv = function(teamName) {
     const teamDiv = document.createElement("div");
     teamDiv.style.backgroundColor = teamName === "Red Team" ? "red" : "rgb(31,207,49)";
@@ -248,8 +181,6 @@ const createTeamDiv = function(teamName) {
     const header = document.createElement("h2");
     header.style.color = "white";
     header.style.textShadow = "0 0 20px white";
-    // header.style.webkitTextStrokeWidth = "0.5px";
-    // header.style.webkitTextStrokeColor = "black";
     header.style.fontSize = "40px";
     header.style.margin = "15px";
     header.style.padding = "2px";
@@ -260,42 +191,60 @@ const createTeamDiv = function(teamName) {
     // Entries
     const entriesDiv = document.createElement("div");
 
-    for (let i = 1; i <= 15; i++) {
-        const entryRow = document.createElement("div");
-        entryRow.style.display = "flex";
-        entryRow.style.marginTop = "5px";
+    // Column labels
+    const labelsRow = document.createElement("div");
+    labelsRow.style.display = "flex";
+    labelsRow.style.marginTop = "5px";
+    labelsRow.style.color = "white"; // Set text color to white
 
-        // Number label
-        const numberLabel = document.createElement("div");
-        if (i < 10) {
-            numberLabel.textContent = `0${i}`;    
+    const labels = ["HID", "Player ID", "Codename"];
+    const flexValues = ["0.09", "0.3", "0.5"]; // Adjust flex values here for different spacing
+
+    labels.forEach((labelText, index) => {
+        const label = document.createElement("div");
+        label.textContent = labelText;
+        label.style.flex = flexValues[index]; // Apply flex values to each label column
+        labelsRow.appendChild(label);
+    });
+
+    teamDiv.appendChild(labelsRow);
+
+    for (let i = 0; i <= 30; i++) {
+        if ((teamName === "Red Team" && i % 2 !== 0) || (teamName === "Green Team" && i % 2 === 0)) {
+            const entryRow = document.createElement("div");
+            entryRow.style.display = "flex";
+            entryRow.style.marginTop = "5px";
+
+            // Number label
+            const numberLabel = document.createElement("div");
+            numberLabel.textContent = i < 10 ? `0${i}` : `${i}`;
+            entryRow.appendChild(numberLabel);
+
+            // Player ID input
+            const playerIdInput = document.createElement("input");
+            playerIdInput.type = "text";
+            playerIdInput.maxLength = 10;
+            playerIdInput.style.marginRight = "10px";
+            playerIdInput.setAttribute("id", "playerID-" + i);
+            playerIdInput.setAttribute("class", "playerID");
+            playerIdInput.addEventListener("input", function(event) {
+                this.value = this.value.replace(/\D/g, ''); // Allow only numeric input
+            });
+            entryRow.appendChild(playerIdInput);
+
+            // Codename input
+            const codenameInput = document.createElement("input");
+            codenameInput.type = "text";
+            codenameInput.maxLength = 10;
+            codenameInput.style.marginRight = "10px";
+            codenameInput.disabled = true; // Initially disabled
+            codenameInput.setAttribute("id", "codename-" + i);
+            entryRow.appendChild(codenameInput);
+            // Store reference to Codename input
+            codenameInputs[i] = codenameInput;
+
+            entriesDiv.appendChild(entryRow);
         }
-        else {
-            numberLabel.textContent = `${i} `;
-        }
-        // numberLabel.textContent = `${i}`;
-        entryRow.appendChild(numberLabel);
-
-        // Player ID input
-        const playerIdInput = document.createElement("input");
-        playerIdInput.type = "text";
-        playerIdInput.maxLength = 10;
-        playerIdInput.style.marginRight = "10px";
-        playerIdInput.addEventListener("input", function(event) {
-            this.value = this.value.replace(/\D/g, ''); // Allow only numeric input
-        });
-        entryRow.appendChild(playerIdInput);
-
-        // Equipment ID input
-        const equipmentIDInput = document.createElement("input");
-        equipmentIDInput.type = "text";
-        equipmentIDInput.maxLength = 10;
-        equipmentIDInput.addEventListener("input", function(event) {
-            this.value = this.value.replace(/\D/g, ''); // Allow only numeric input
-        });
-        entryRow.appendChild(equipmentIDInput);
-
-        entriesDiv.appendChild(entryRow);
     }
 
     teamDiv.appendChild(entriesDiv);
@@ -336,7 +285,6 @@ function startMusic(){
     var track = new Audio('Track0'+ trackNum + '.mp3');
     track.play()
 }
-
 
 /* ACTION SCREEN */
 async function initializeActionScreen() {
@@ -521,8 +469,6 @@ const DEBUG_gameTimer = () => {
 //         let username = team_array[index].username
 //         let $tableCell = $('tbody tr#'+username)
 
-
-
 //         $(`#${username}Score`).text(`${team_array[index].score}`)
         
 //         // Animate cell to scroll to correct position
@@ -565,7 +511,6 @@ const displayScore = () => {
     scoreWindowRed.innerHTML = redTable
     scoreWindowGreen.innerHTML = greenTable
 }
-
 
 // Takes the current team arrays, sorts them, and writes out their contents into the HTML element.
 // const displayScore = () => {
@@ -990,7 +935,18 @@ async function sendPlayerEntryById(equipmentID, playerID) {
     if (result[0].trim() == "fail") {
         throw new Error(result[1].trim());
     } else {
-        //name
+        /*name
+        return result[1].trim();*/
+        //new part
+        // If successful, extract the returned Codename
+        const codename = result[1].trim();
+        // Find the corresponding Codename input and set its value
+        //const codenameInput = document.querySelector(`#editScreen input[type='text'][value='${equipmentID}'] + input[type='text']`);
+        const codenameInput = document.getElementById("codename-" + Number(equipmentID));
+        codenameInput.value = codename;
+        // Disable and style the Codename input
+        codenameInput.disabled = true;
+        codenameInput.style.backgroundColor = "white";
         return result[1].trim();
     }
 
@@ -1005,7 +961,6 @@ async function sendPlayerEntryByName(equipmentID, playerID, playerCodeName) {
         throw new Error(result[1].trim());
     }
 }
-
 
 SOCKET.onopen = async () => {
     let status = await getStatus();
