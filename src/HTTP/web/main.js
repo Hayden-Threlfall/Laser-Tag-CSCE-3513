@@ -105,7 +105,7 @@ const initializeEntryScreen = function() {
 
     // Button Press Event listeners
     document.addEventListener("keydown", function(event) {
-        if (event.key === "F5") {
+        if (event.key === "5") {
             document.getElementById("editScreen").style.display = "none";
             requestStart();
         } else if (event.key === "F1") {
@@ -290,7 +290,7 @@ function startMusic(){
 async function initializeActionScreen() {
     let body = []
     body.push(`
-    <div id="timerParent" style="text-align:center;">
+    <div id="timerParent" style="text-align:center; color:#fff">
         <pr id="timer"></pr>
     </div>
     <br><br>
