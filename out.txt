@@ -1,0 +1,35 @@
+this program will generate some test traffic for 2 players on the red 
+team as well as 2 players on the green team
+
+Enter equipment id of red player 1 ==> Enter equipment id of red player 2 ==> Enter equipment id of green player 1 ==> Enter equipment id of green player 2 ==> 
+waiting for start from game_software
+Received from game software: 1
+Received from game software: 3
+Received from game software: 2
+Received from game software: 4
+Received from game software: 202
+
+transmitting to game: 4:1
+Received from game software: 1
+
+transmitting to game: 3:2
+Received from game software: 2
+
+transmitting to game: 3:4
+Received from game software: 4
+
+transmitting to game: 1:4
+Received from game software: 4
+
+transmitting to game: 2:1
+Received from game software: 1
+
+transmitting to game: 1:4
+Received from game software: 4
+
+transmitting to game: 2:3
+Received from game software: 3
+
+transmitting to game: 3:2
+Received from game software: 2
+

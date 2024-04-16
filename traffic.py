@@ -54,9 +54,9 @@ while True:
 		message = str(greenplayer) + ":" + str(redplayer)
 		
 	# after 10 iterations, send base hit
-	if counter == 10:
-		message = str(redplayer) + ":43"
 	if counter == 20:
+		message = str(redplayer) + ":43"
+	if counter == 10:
 		message = str(greenplayer) + ":53"
 		
 	print("transmitting to game: " + message)

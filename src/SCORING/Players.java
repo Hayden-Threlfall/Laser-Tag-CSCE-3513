@@ -1,4 +1,4 @@
-package UDP;
+package SCORING;
 
 public class Players{
 

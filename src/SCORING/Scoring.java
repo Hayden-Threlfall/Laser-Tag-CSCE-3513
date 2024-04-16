@@ -1,6 +1,7 @@
-package UDP;
+package SCORING;
 
 import SOCKETS.Sockets;
+import UDP.UDPSend;
 
 import java.util.Arrays;
 
@@ -49,9 +50,8 @@ public class Scoring {
         }
 
         if(!(player1 == -1 && player2 == -1)){
-
             //check if players on same team even/odd
-            if(player1%2 == player2%2 && player2 != 53) {
+            if(player1%2 == player2%2 && player2 != 53 && player2 != 43) {
                 UDPSend.send(Integer.toString(player1));
                 Players.addScore(player1, -10);
                 return;

@@ -1,6 +1,6 @@
 import UDP.UDPReceive;
 import UDP.UDPSend;
-import UDP.Scoring;
+import SCORING.Scoring;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,7 +12,7 @@ import java.io.IOException;
 import DATABASE.Database;
 import HTTP.HTTPServer;
 import SOCKETS.Sockets;
-import UDP.Players;
+import SCORING.Players;
 //import HTTP.HTTPServer;
 
 public class Main extends Thread{

@@ -13,9 +13,9 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import DATABASE.Database;
-import UDP.Scoring;
+import SCORING.Scoring;
 import UDP.UDPSend;
-import UDP.Players;
+import SCORING.Players;
 
 
 public class Sockets extends WebSocketServer{

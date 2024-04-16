@@ -1,6 +1,6 @@
 package UDP;
 
-import UDP.Scoring;
+import SCORING.Scoring;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
