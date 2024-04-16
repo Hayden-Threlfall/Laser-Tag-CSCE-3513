@@ -105,7 +105,7 @@ const initializeEntryScreen = function() {
 
     // Button Press Event listeners
     document.addEventListener("keydown", function(event) {
-        if (event.key === "5") {
+        if (event.ctrlKey && event.shiftKey) {
             document.getElementById("editScreen").style.display = "none";
             requestStart();
         } else if (event.key === "F1") {
