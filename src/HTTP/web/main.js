@@ -209,7 +209,7 @@ const createTeamDiv = function(teamName) {
 
     teamDiv.appendChild(labelsRow);
 
-    for (let i = 0; i <= 30; i++) {
+    for (let i = 1; i <= 30; i++) {
         if ((teamName === "Red Team" && i % 2 !== 0) || (teamName === "Green Team" && i % 2 === 0)) {
             const entryRow = document.createElement("div");
             entryRow.style.display = "flex";
