@@ -281,7 +281,7 @@ const clearAllEntries = function() {
 };
 
 function startMusic(){
-    var trackNum = parseint((Math.random()*8)% 8, 10);
+    var trackNum = parseInt((Math.random()*8)% 8, 10);
     var track = new Audio('Track0'+ trackNum + '.mp3');
     track.play()
 }
@@ -360,7 +360,7 @@ async function initializeActionScreen() {
     // DEBUG_FILL_PLAYER()
     displayScore()
     // updateScore("Hayden", 100)
-    //startMusic()
+    setTimeout(startMusic, 13000);
     // After 30 second timer, starts another one that calls acknowledgeGameEnd.
     initializePreGameTimer()
     // DEBUG_CHANGE_SCORES()
