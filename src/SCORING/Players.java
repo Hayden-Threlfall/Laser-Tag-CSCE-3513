@@ -1,4 +1,5 @@
 package SCORING;
+import java.util.HashMap;
 
 public class Players{
 
@@ -23,48 +24,49 @@ public class Players{
         }
     }
 
-    private final  Player[] players;
+    private final HashMap<Integer, Player> players;
 
     public Players() {
-        players = new Player[31]; //indexed to be 1 to 30
+        players = new HashMap<Integer, Player>();
     }
 
     public void setPlayer(long playerID, int equipmentID, String codeName) {
-        players[equipmentID] = new Player(playerID, codeName);
+        // players[equipmentID] = new Player(playerID, codeName);
+        players.put(equipmentID, new Player(playerID, codeName));
     }
 
     public void addScore(int equipmentID, int scoreToAdd) {
-        players[equipmentID].score += scoreToAdd;
+        players.get(equipmentID).score += scoreToAdd;
+        // players[equipmentID].score += scoreToAdd;
     }
 
     public void setBase(int equipmentID){
-        players[equipmentID].base = true;
+        players.get(equipmentID).base = true;
+        // players[equipmentID].base = true;
     }
 
 
     //getters for sockets
     public int getScore(int equipmentID) {
-        if (players[equipmentID] == null) {
+        if (players.get(equipmentID) == null) {
             return -1;
         }
-        return players[equipmentID].score;
+        return players.get(equipmentID).score;
     }
 
     public String getCodeName(int equipmentID) {
-        if (players[equipmentID] == null) {
+        if (players.get(equipmentID) == null) {
             return null;
         }
-        return players[equipmentID].codeName;
+        return players.get(equipmentID).codeName;
     }
 
     public boolean getBase(int equipmentID) {
-        return players[equipmentID].base;
+        return players.get(equipmentID).base;
     }
 
     public void clear() {
-        for(int i = 0; i < 31; i++)
-            if (players[i] != null)
-                players[i].clear();
+        players.clear();
     }
 
 }
