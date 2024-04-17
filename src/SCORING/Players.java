@@ -32,7 +32,8 @@ public class Players{
 
     public void setPlayer(long playerID, int equipmentID, String codeName) {
         // players[equipmentID] = new Player(playerID, codeName);
-        players.put(equipmentID, new Player(playerID, codeName));
+        if(equipmentID != 43 && equipmentID != 53)
+            players.put(equipmentID, new Player(playerID, codeName));
     }
 
     public void addScore(int equipmentID, int scoreToAdd) {
