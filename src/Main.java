@@ -34,7 +34,10 @@ public class Main extends Thread{
         Runnable gameStartFunc = () -> {
             gameStart();
         };
-        socketServer = new Sockets(8001, Scores, database, playerInfo, gameStartFunc);
+        Runnable gameResetFunc = () -> {
+            reset();
+        };
+        socketServer = new Sockets(8001, Scores, database, playerInfo, gameStartFunc, gameResetFunc);
         socketServer.start();
 
         httpServer = new HTTPServer();

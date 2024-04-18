@@ -32,6 +32,7 @@ public class Sockets extends WebSocketServer{
     private Players players;
     private Database database;
     private final Runnable gameStartMain;
+    private final Runnable gameResetFunc;
     private long startTime = 0;
 
     enum GameState {
@@ -42,10 +43,11 @@ public class Sockets extends WebSocketServer{
     private GameState gameState = GameState.SETUP;
     // private HashMap<Integer, PlayerInfo> players;
 
-    public Sockets(int port, Scoring scores, Database database, Players players, Runnable gameStartMain) throws UnknownHostException {
+    public Sockets(int port, Scoring scores, Database database, Players players, Runnable gameStartMain, Runnable gameResetFunc) throws UnknownHostException {
         super(new InetSocketAddress(port));
 
         this.gameStartMain = gameStartMain;
+        this.gameResetFunc = gameResetFunc;
 
         //actual values
         // this.scores = scores;
@@ -110,6 +112,9 @@ public class Sockets extends WebSocketServer{
             case "add_player_name":
                 this.addPlayerByName(socket, messageParts);
                 break;
+            case "clear_players":
+                this.clearPlayers(socket, messageParts);
+                break;
             default:
                 //socket.send("RESPONSE; " + messageParts[1] + "; UNKNOWN_REQUEST");
                 this.sendResponse(socket, messageParts[1], "unknown request");
@@ -168,6 +173,17 @@ public class Sockets extends WebSocketServer{
             this.sendResponse(socket, message[1], "success");
         } else {
             this.sendResponse(socket, message[1], "fail; game is already running");
+        }
+    }
+
+    //clear_players; <request_id>
+    //response; <request_id>; <success/fail>; optional<fail_message>
+    private void clearPlayers(WebSocket socket, String[] message) {
+        if (gameState == GameState.RUNNING) {
+            this.sendResponse(socket, message[1], "fail; Game is currently running");
+        } else {
+            this.gameResetFunc.run();
+            this.sendResponse(socket, message[1], "success");
         }
     }
 

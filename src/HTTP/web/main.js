@@ -949,6 +949,16 @@ async function sendPlayerEntryByName(equipmentID, playerID, playerCodeName) {
     }
 }
 
+//clear_players; <request_id>
+//response; <request_id>; <success/fail>; optional<fail_message>
+async function clearPlayers() {
+    let result = await sendRequest("clear_players", "");
+
+    if (result[0].trim() == "fail") {
+        throw new Error(result[1].trim());
+    }
+}
+
 SOCKET.onopen = async () => {
     let status = await getStatus();
     switch (status.status) {
