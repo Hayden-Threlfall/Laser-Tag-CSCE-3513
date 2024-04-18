@@ -250,6 +250,9 @@ const handleButtonClick = function(event) {
     } else if (buttonText === "Clear Game (Ctrl + Alt)") {
         // Clear all entries
         clearAllEntries();
+        clearPlayers();
+        location.reload()
+
     }
 };
 
