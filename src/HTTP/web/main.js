@@ -285,9 +285,9 @@ async function initializeActionScreen() {
     </div>
     <br><br>
     <div style="text-align:center;overflow:hidden">
-        <table id="redTable" class="head" style="float:left; width:45%; background-color:#900; color:#fff; border-spacing:0px">
+        <table id="redTable" class="head" style="float:left; width:45%; background-color:red; color:#fff; border-spacing:0px; box-shadow:0 0 20px red; text-shadow:0 0 20px white; margin:20px">
             <thead>
-                <tr class="head">
+                <tr>
                     <th style="width:80%">Username</th>
                     <th>Score</th>
                 </tr>
@@ -295,9 +295,9 @@ async function initializeActionScreen() {
             <tbody id="scoreWindowRed">
             </tbody>
         </table>
-        <table id="greenTable" style="float:right; width:45%; background-color:#060; color:#fff; border-spacing:0px">
+        <table id="greenTable" style="float:right; width:45%; background-color:rgb(31,207,49); color:#fff; border-spacing:1px; box-shadow:0 0 20px rgb(31,207,49); text-shadow:0 0 20px white; margin:20px">
             <thead>    
-                <tr style="top:5px;">
+                <tr>
                     <th style="width:80%">Username</th>
                     <th>Score</th>
                 </tr>
