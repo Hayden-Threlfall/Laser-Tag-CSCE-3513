@@ -244,13 +244,10 @@ const createTeamDiv = function(teamName) {
 
 const handleButtonClick = function(event) {
     const buttonText = event.target.textContent;
-    if (buttonText === "F1 Edit Game") {
-        document.getElementById("editScreen").style.display = "block";
-        document.getElementById("actionScreen").remove();
-    } else if (buttonText === "F5 Start Game") {
+    if (buttonText === "Start Game (Ctrl + Shift)") {
         document.getElementById("editScreen").style.display = "none";
         requestStart();
-    } else if (buttonText === "F12 Clear Game") {
+    } else if (buttonText === "Clear Game (Ctrl + Alt)") {
         // Clear all entries
         clearAllEntries();
     }
