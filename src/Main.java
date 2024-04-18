@@ -90,10 +90,10 @@ public class Main extends Thread{
     public static void end() {
         UDPSend.endGame();
         socketServer.end();
+        reset();
     }
 
     public static void reset() {
-        
         Scores.resetTable();
     }
 
