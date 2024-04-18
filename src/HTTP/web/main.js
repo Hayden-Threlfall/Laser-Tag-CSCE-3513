@@ -294,7 +294,7 @@ async function initializeActionScreen() {
         <pr id="timer"></pr>
     </div>
     <br><br>
-    <div style="text-align:center;">
+    <div style="text-align:center;overflow:hidden">
         <table id="redTable" class="head" style="float:left; width:45%; background-color:#900; color:#fff; border-spacing:0px">
             <thead>
                 <tr class="head">
@@ -316,7 +316,7 @@ async function initializeActionScreen() {
             </tbody>
         </table>
     </div>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br>
     <div style="margin:auto;text-align:center;">
         <select id="eventWindow" size="15" style="width:50%;"></select>
     </div>
