@@ -79,12 +79,8 @@ const initializeEntryScreen = function() {
     buttonsDiv.style.marginTop = "20px";
 
     const buttonLabels = [
-        "F1 Edit Game",
-        "F2 Game Parameters",
-        "F5 Start Game",
-        "F8 View Game",
-        "F10 Flick Sync",
-        "F12 Clear Game"
+        "Start Game (Ctrl + Shift)",
+        "Clear Game (Ctrl + Alt)"
     ];
 
     buttonLabels.forEach(label => {
@@ -108,13 +104,7 @@ const initializeEntryScreen = function() {
         if (event.ctrlKey && event.shiftKey) {
             document.getElementById("editScreen").style.display = "none";
             requestStart();
-        } else if (event.key === "F1") {
-            document.getElementById("editScreen").style.display = "block";
-            document.getElementById("actionScreen").remove();
-        } else if (event.key === "DEL") {
-            // Clear selected entry
-            clearSelectedEntry();
-        } else if (event.key === "F12") {
+        } else if (event.ctrlKey && event.altKey) {
             // Clear all entries
             clearAllEntries();
         }
