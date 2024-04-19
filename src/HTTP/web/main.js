@@ -324,6 +324,8 @@ async function initializeActionScreen(backendTime) {
     eventWindow = document.getElementById("eventWindow")
     
     // Get the player names to store in the arrays
+    RED_TEAM = []
+    GREEN_TEAM = []
     playerNames = await getScores() //Returns a dict containins two dicts with usernames separated by team
     // console.log(playerNames)
     for (const [name, info] of Object.entries(playerNames['red_scores'])) {
