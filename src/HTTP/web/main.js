@@ -282,7 +282,7 @@ function startMusic(){
 async function initializeActionScreen(backendTime) {
     let body = []
     body.push(`
-    <div id="timerParent" style="text-align:center; color:#fff">
+    <div id="timerParent" style="text-align:center; color:#fff; font-size:35px">
         <pr id="timer"></pr>
     </div>
     <br><br>
@@ -305,6 +305,28 @@ async function initializeActionScreen(backendTime) {
                 </tr>
             </thead>
             <tbody id="scoreWindowGreen">
+            </tbody>
+        </table>
+    </div>
+    <div style="text-align:center;overflow:hidden">
+        <table style="float:left; width:15%; left:15%; position:relative; background-color:red; color:#fff; border-spacing:0px; box-shadow:0 0 20px red; text-shadow:0 0 20px white; margin:20px">
+            <thead>
+                <tr><th>Overall Score</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="redHighscore">0</td>
+                </tr>
+            </tbody>
+        </table>
+        <table style="float:right; width:15%; right:15%; position:relative; background-color:rgb(31,207,49); color:#fff; border-spacing:1px; box-shadow:0 0 20px rgb(31,207,49); text-shadow:0 0 20px white; margin:20px">
+            <thead>
+                <tr><th>Overall Score</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="greenHighscore">0</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -473,10 +495,10 @@ const initializeGameTimer = (inputTime) => {
 }
 
 //DEBUG: Displays when timer runs out.
-const DEBUG_gameTimer = () => {
-    document.getElementById("timer").innerHTML = "finished timer"
-    console.log("finished timer")
-}
+// const DEBUG_gameTimer = () => {
+//     document.getElementById("timer").innerHTML = "finished timer"
+//     console.log("finished timer")
+// }
 
 // const animateSort = (team_array) => {
 //     let rowTop = 0
@@ -502,6 +524,8 @@ const displayScore = () => {
     // Empty current scores.
     let redTable = ''
     let greenTable = ''
+    let redTotal = 0
+    let greenTotal = 0
     
     // Sort the scores in each array.
     RED_TEAM.sort(function(a,b) {
@@ -516,15 +540,60 @@ const displayScore = () => {
         let row = `<tr id="${element.username}"><td style="width:80%">${element.username}</td><td id="${element.username}Score">${element.score}</td></tr>`
         redTable += row
         element.$html = $(`${row}`)
+
+        redTotal+=parseInt(element.score)
     })
     GREEN_TEAM.forEach((element) => {
         let row = `<tr id="${element.username}"><td style="width:80%">${element.username}</td><td id="${element.username}Score">${element.score}</td></tr>`
         greenTable += row
         element.$html = $(`${row}`)
+
+        greenTotal+=parseInt(element.score)
     })
 
     scoreWindowRed.innerHTML = redTable
     scoreWindowGreen.innerHTML = greenTable
+
+    changeTotalScore(redTotal, greenTotal)
+}
+
+// The interval 
+let colorChange = null
+
+// Stores the total scores of both teams, then makes the higher score flash
+const changeTotalScore = async (redScore, greenScore) => {
+    // Stop interval
+    if (colorChange !== null) {
+        clearInterval(colorChange)
+    }
+
+    redTotal = document.getElementById('redHighscore')
+    greenTotal = document.getElementById('greenHighscore')
+
+    // Set both to default white font.
+    redTotal.style.color = 'white'
+    greenTotal.style.color = 'white'
+
+    redTotal.innerHTML = redScore
+    greenTotal.innerHTML = greenScore
+
+    // Make one of the scores start flashing
+    if (redScore > greenScore) {
+        colorChange = setInterval(function () {
+            redTotal.style.color = (redTotal.style.color == 'white' ? 'purple' : 'white')
+        }, 100); 
+    }
+    else if (redScore === greenScore) { //Make both flash
+        colorChange = setInterval(function () {
+            redTotal.style.color = (redTotal.style.color == 'white' ? 'purple' : 'white')
+            greenTotal.style.color = (greenTotal.style.color == 'white' ? 'purple' : 'white') 
+        }, 100); 
+    }
+    else {
+        colorChange = setInterval(function () {
+            greenTotal.style.color = (greenTotal.style.color == 'white' ? 'purple' : 'white') 
+        }, 100); 
+    }
 }
 
 // Takes the current team arrays, sorts them, and writes out their contents into the HTML element.
