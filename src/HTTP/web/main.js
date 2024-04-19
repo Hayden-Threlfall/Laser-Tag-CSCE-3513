@@ -107,6 +107,8 @@ const initializeEntryScreen = function() {
         } else if (event.ctrlKey && event.altKey) {
             // Clear all entries
             clearAllEntries();
+            clearPlayers();
+            location.reload()
         }
     });
 
