@@ -277,7 +277,7 @@ function startMusic(){
 }
 
 /* ACTION SCREEN */
-async function initializeActionScreen() {
+async function initializeActionScreen(backendTime) {
     let body = []
     body.push(`
     <div id="timerParent" style="text-align:center; color:#fff">
@@ -352,7 +352,7 @@ async function initializeActionScreen() {
     // updateScore("Hayden", 100)
     setTimeout(startMusic, 13000);
     // After 30 second timer, starts another one that calls acknowledgeGameEnd.
-    initializePreGameTimer()
+    initializePreGameTimer(backendTime)
     // DEBUG_CHANGE_SCORES()
     // DEBUG_FILL_EVENT()
     // let checkBase = setTimeout(() => {
@@ -362,13 +362,25 @@ async function initializeActionScreen() {
 
 // Initializes the 30s pregame timer. After, calls initializeGameTimer.
 // Input is when the timer began
-const initializePreGameTimer = (timePassed) => {
+const initializePreGameTimer = (backendTime) => {
+    // Check to see if frontend needs to skip to the game timer
+    if ((Date.now() - backendTime) > (1000*30)) {
+        initializeGameTimer(backendTime)
+        return
+    }
+    
     let interval = 30
 
-    //Track current time for timer.
-    let start = Date.now()
+    //Set the start time to be the backend start time.
+    let start = backendTime
     let seconds = 0
     let displayTime = 30
+
+    // Calculating displayTime early makes it so refreshing frontend is smooth
+    let diff = Date.now() - start
+    let secondsInMS = diff % (1000 * 60) //Get the number of seconds in milliseconds
+    seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
+    displayTime = 30 - seconds //seconds is counting up, so have displayTime count down
 
     //Begin with 30s countdown until game begins, then 6 minute timer.
     //Have <pr> display diff messages. Use functions.
@@ -389,7 +401,7 @@ const initializePreGameTimer = (timePassed) => {
 
         if(seconds > interval) {
             clearInterval(preGameTimer)
-            initializeGameTimer()
+            initializeGameTimer(backendTime)
             // DEBUG_gameTimer()
             // acknowledgeGameEnd()
             // console.log('adsf')
@@ -403,15 +415,24 @@ const initializePreGameTimer = (timePassed) => {
 }
 
 // Creates 6 minute timer. After, calls acknowledgeGameEnd() to print the return to entry screen button.
-const initializeGameTimer = () => {
+const initializeGameTimer = (inputTime) => {
     let interval = 360
 
     //Track current time for timer.
-    let start = Date.now()
+    let start = inputTime + (1000 * 30) //Add 30s to account for the preGameTimer
     let seconds = 0
     let minutes = 0
     let displaySeconds = 0
     let displayMinutes = 6
+
+    // Calculate displayMinutes/Seconds early so refreshing looks smoother
+    let diff = Date.now() - start
+    let secondsInMS = diff % (1000 * 60 * 60) //Get the number of seconds in milliseconds
+    seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
+    minutes = Math.floor(seconds / 60)
+    
+    displayMinutes = 5 - minutes
+    displaySeconds = (60 - (seconds % 60)) % 60 //seconds is counting up, so have displayTime count down    
 
     //Begin with 30s countdown until game begins, then 6 minute timer.
     //Have <pr> display diff messages. Use functions.
@@ -430,7 +451,7 @@ const initializeGameTimer = () => {
         let secondsInMS = diff % (1000 * 60 * 60) //Get the number of seconds in milliseconds
         seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
         minutes = Math.floor(seconds / 60)
-        // console.log(minutes)
+        
         displayMinutes = 5 - minutes
         displaySeconds = (60 - (seconds % 60)) % 60 //seconds is counting up, so have displayTime count down      
 
@@ -439,7 +460,7 @@ const initializeGameTimer = () => {
 
         if(seconds > interval) {
             clearInterval(GameTimer)
-            acknowledgeGameEnd()
+            // acknowledgeGameEnd()
             // DEBUG_gameTimer()
             // acknowledgeGameEnd()
             // console.log('adsf')
@@ -688,9 +709,9 @@ const postBaseEvent = (playerName) => {
 }
 
 // When backend sends game start permession
-const frontendGameStart = () => {
+const frontendGameStart = (backendTime) => {
     //Initialize the action screen
-    initializeActionScreen()
+    initializeActionScreen(backendTime)
 }
 
 // DEBUG: Fills arrays 
@@ -834,7 +855,7 @@ function handleEndGame(msgParts) {
 //start_game; <timestamp>
 function handleStartGame(msgParts) {
     let timestamp = Number(msgParts[1]);
-    frontendGameStart();
+    frontendGameStart(timestamp);
 }
 
 //request is what is wanted (like get_status)
@@ -970,7 +991,7 @@ SOCKET.onopen = async () => {
             //waiting for start
             break;
         case "in_play":
-            frontendGameStart(/*status.start_time*/);
+            frontendGameStart(status.start_time);
             break;
         case "game_over":
             initializeEntryScreen();
