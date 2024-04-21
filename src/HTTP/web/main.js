@@ -141,7 +141,7 @@ const handleEnterPress = async function (rowIndexId, playerId, equipmentId, team
     const equipmentIDInput = document.getElementById("equipmentID-" + Number(rowIndexId));
     const errorMsg = document.getElementById("errorMsg-" + rowIndexId);
 
-    console.log(rowIndexId);
+    //console.log(rowIndexId);
 
     if (equipmentIDInput.value == "") {
         errorMsg.text = "EID can't be left blank!";
@@ -205,7 +205,6 @@ const handleEnterPress = async function (rowIndexId, playerId, equipmentId, team
 
 const enableCodenameInput = function (rowIndexId) {
     //const codenameInput = document.querySelector(`#editScreen input[type='text'][value='${equipmentId}'] + input[type='text']`);
-    console.log("code name: ", rowIndexId);
     const codenameInput = document.getElementById("codename-" + Number(rowIndexId));
     codenameInput.disabled = false;
     codenameInput.style.backgroundColor = "white";
@@ -240,14 +239,18 @@ const createTeamDiv = function(teamName) {
     labelsRow.style.color = "white"; // Set text color to white
 
     const labels = ["EID", "Player ID", "Codename"];
-    const flexValues = ["0.34", "0.34", "0.3"]; // Adjust flex values here for different spacing
+    //const flexValues = ["0.34", "0.34", "0.3"]; // Adjust flex values here for different spacing
+
+    const rightPadding = ["155px", "118px", "0px"];
 
     labels.forEach((labelText, index) => {
         const label = document.createElement("div");
         label.textContent = labelText;
-        label.style.flex = flexValues[index]; // Apply flex values to each label column
+        //label.style.flex = flexValues[index]; // Apply flex values to each label column
+        label.style['padding-right'] = rightPadding[index];
         labelsRow.appendChild(label);
     });
+
 
     teamDiv.appendChild(labelsRow);
 
