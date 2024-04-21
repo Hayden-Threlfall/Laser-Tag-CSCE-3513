@@ -121,42 +121,57 @@ const initializeEntryScreen = function() {
                 const playerIdInput = entryRow.getElementsByClassName("playerID")[0]; // Player ID input is the current input field
                 const playerId = playerIdInput.value.trim();
 
-                // Determine the equipment ID based on the row label and team color
-                const equipmentIdLabel = entryRow.querySelector("div:first-child"); // Select the first child (label) of the entry row
-                const equipmentId = equipmentIdLabel.textContent.padStart(2, '0'); // Extract the equipment ID from the label
+                const equipmentIdInput = entryRow.getElementsByClassName("equipmentID")[0];
+                const equipmentId = equipmentIdInput.value.trim();
 
-                handleEnterPress(equipmentId, playerId);
+                // Determine the row index based on the row label and team color
+                //const rowIndexLabel = entryRow.querySelector("div:first-child"); // Select the first child (label) of the entry row
+                //const rowIndexId = rowIndexLabel.value.padStart(2, '0'); // Extract the equipment ID from the label
+                
+                const rowIndexId = equipmentIdInput.id.substring(equipmentIdInput.className.length+1);
+
+                console.log(rowIndexId);
+                handleEnterPress(rowIndexId, playerId, equipmentId);
             }
         });
     });
 };
 
-const handleEnterPress = async function (equipmentId, playerId, team) {
-    const codenameInput = document.getElementById("codename-" + Number(equipmentId));
+const handleEnterPress = async function (rowIndexId, playerId, equipmentId, team) {
+    const codenameInput = document.getElementById("codename-" + Number(rowIndexId));
+    console.log(codenameInput);
     if (codenameInput.disabled) {
-        const playerIDInput = document.getElementById("playerID-" + Number(equipmentId));
+        const playerIDInput = document.getElementById("playerID-" + Number(rowIndexId));
         playerIDInput.disabled = true;
         playerIDInput.style.backgroundColor = "white";
+        
+        const equipmentIDInput = document.getElementById("equipmentID-" + Number(rowIndexId));
+        equipmentIDInput.disabled = true;
+        equipmentIDInput.style.backgroundColor = "white";
         try {
-            await sendPlayerEntryById(Number(equipmentId), Number(playerId));
+            const codename = await sendPlayerEntryById(Number(equipmentId), Number(playerId));
+            // If successful, extract the returned Codename
+            codenameInput.value = codename;
+            // Disable and style the Codename input
+            codenameInput.disabled = true;
+            codenameInput.style.backgroundColor = "white";
         } catch (error) {
             // Handle error
             console.error(error);
             // Enable the Codename input associated with the failed entry
-            enableCodenameInput(equipmentId);
+            enableCodenameInput(rowIndexId);
             
         }
     } else {
         await sendPlayerEntryByName(Number(equipmentId), playerId, codenameInput.value);
         codenameInput.disabled = true;
     }
-
-    //If successful 
 };
 
-const enableCodenameInput = function (equipmentId) {
+const enableCodenameInput = function (rowIndexId) {
     //const codenameInput = document.querySelector(`#editScreen input[type='text'][value='${equipmentId}'] + input[type='text']`);
-    const codenameInput = document.getElementById("codename-" + Number(equipmentId));
+    console.log("code name: ", rowIndexId);
+    const codenameInput = document.getElementById("codename-" + Number(rowIndexId));
     codenameInput.disabled = false;
     codenameInput.style.backgroundColor = "white";
 };
@@ -189,8 +204,8 @@ const createTeamDiv = function(teamName) {
     labelsRow.style.marginTop = "5px";
     labelsRow.style.color = "white"; // Set text color to white
 
-    const labels = ["HID", "Player ID", "Codename"];
-    const flexValues = ["0.09", "0.3", "0.5"]; // Adjust flex values here for different spacing
+    const labels = ["EID", "Player ID", "Codename"];
+    const flexValues = ["0.34", "0.34", "0.3"]; // Adjust flex values here for different spacing
 
     labels.forEach((labelText, index) => {
         const label = document.createElement("div");
@@ -207,16 +222,28 @@ const createTeamDiv = function(teamName) {
             entryRow.style.display = "flex";
             entryRow.style.marginTop = "5px";
 
-            // Number label
+            /* Number label
             const numberLabel = document.createElement("div");
             numberLabel.textContent = i < 10 ? `0${i}` : `${i}`;
-            entryRow.appendChild(numberLabel);
+            entryRow.appendChild(numberLabel);*/
+
+            // Equipment ID input
+            const equipmentIdInput = document.createElement("input");
+            equipmentIdInput.type = "text";
+            equipmentIdInput.maxLength = 10;
+            equipmentIdInput.style.marginRight = "5px";
+            equipmentIdInput.setAttribute("id", "equipmentID-" + i);
+            equipmentIdInput.setAttribute("class", "equipmentID");
+            equipmentIdInput.addEventListener("input", function(event) {
+                this.value = this.value.replace(/\D/g, ''); // Allow only numeric input
+            });
+            entryRow.appendChild(equipmentIdInput);
 
             // Player ID input
             const playerIdInput = document.createElement("input");
             playerIdInput.type = "text";
             playerIdInput.maxLength = 10;
-            playerIdInput.style.marginRight = "10px";
+            playerIdInput.style.marginRight = "5px";
             playerIdInput.setAttribute("id", "playerID-" + i);
             playerIdInput.setAttribute("class", "playerID");
             playerIdInput.addEventListener("input", function(event) {
@@ -228,7 +255,7 @@ const createTeamDiv = function(teamName) {
             const codenameInput = document.createElement("input");
             codenameInput.type = "text";
             codenameInput.maxLength = 10;
-            codenameInput.style.marginRight = "10px";
+            codenameInput.style.marginRight = "5px";
             codenameInput.disabled = true; // Initially disabled
             codenameInput.setAttribute("id", "codename-" + i);
             entryRow.appendChild(codenameInput);
@@ -279,10 +306,10 @@ function startMusic(){
 }
 
 /* ACTION SCREEN */
-async function initializeActionScreen() {
+async function initializeActionScreen(backendTime) {
     let body = []
     body.push(`
-    <div id="timerParent" style="text-align:center; color:#fff">
+    <div id="timerParent" style="text-align:center; color:#fff; font-size:35px">
         <pr id="timer"></pr>
     </div>
     <br><br>
@@ -308,6 +335,28 @@ async function initializeActionScreen() {
             </tbody>
         </table>
     </div>
+    <div style="text-align:center;overflow:hidden">
+        <table style="float:left; width:15%; left:15%; position:relative; background-color:red; color:#fff; border-spacing:0px; box-shadow:0 0 20px red; text-shadow:0 0 20px white; margin:20px">
+            <thead>
+                <tr><th>Overall Score</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="redHighscore">0</td>
+                </tr>
+            </tbody>
+        </table>
+        <table style="float:right; width:15%; right:15%; position:relative; background-color:rgb(31,207,49); color:#fff; border-spacing:1px; box-shadow:0 0 20px rgb(31,207,49); text-shadow:0 0 20px white; margin:20px">
+            <thead>
+                <tr><th>Overall Score</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="greenHighscore">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <br><br>
     <div style="margin:auto;text-align:center;">
         <select id="eventWindow" size="15" style="width:50%;"></select>
@@ -324,6 +373,8 @@ async function initializeActionScreen() {
     eventWindow = document.getElementById("eventWindow")
     
     // Get the player names to store in the arrays
+    RED_TEAM = []
+    GREEN_TEAM = []
     playerNames = await getScores() //Returns a dict containins two dicts with usernames separated by team
     // console.log(playerNames)
     for (const [name, info] of Object.entries(playerNames['red_scores'])) {
@@ -354,7 +405,7 @@ async function initializeActionScreen() {
     // updateScore("Hayden", 100)
     setTimeout(startMusic, 13000);
     // After 30 second timer, starts another one that calls acknowledgeGameEnd.
-    initializePreGameTimer()
+    initializePreGameTimer(backendTime)
     // DEBUG_CHANGE_SCORES()
     // DEBUG_FILL_EVENT()
     // let checkBase = setTimeout(() => {
@@ -364,13 +415,25 @@ async function initializeActionScreen() {
 
 // Initializes the 30s pregame timer. After, calls initializeGameTimer.
 // Input is when the timer began
-const initializePreGameTimer = (timePassed) => {
+const initializePreGameTimer = (backendTime) => {
+    // Check to see if frontend needs to skip to the game timer
+    if ((Date.now() - backendTime) > (1000*30)) {
+        initializeGameTimer(backendTime)
+        return
+    }
+    
     let interval = 30
 
-    //Track current time for timer.
-    let start = Date.now()
+    //Set the start time to be the backend start time.
+    let start = backendTime
     let seconds = 0
     let displayTime = 30
+
+    // Calculating displayTime early makes it so refreshing frontend is smooth
+    let diff = Date.now() - start
+    let secondsInMS = diff % (1000 * 60) //Get the number of seconds in milliseconds
+    seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
+    displayTime = 30 - seconds //seconds is counting up, so have displayTime count down
 
     //Begin with 30s countdown until game begins, then 6 minute timer.
     //Have <pr> display diff messages. Use functions.
@@ -391,7 +454,7 @@ const initializePreGameTimer = (timePassed) => {
 
         if(seconds > interval) {
             clearInterval(preGameTimer)
-            initializeGameTimer()
+            initializeGameTimer(backendTime)
             // DEBUG_gameTimer()
             // acknowledgeGameEnd()
             // console.log('adsf')
@@ -405,15 +468,24 @@ const initializePreGameTimer = (timePassed) => {
 }
 
 // Creates 6 minute timer. After, calls acknowledgeGameEnd() to print the return to entry screen button.
-const initializeGameTimer = () => {
+const initializeGameTimer = (inputTime) => {
     let interval = 360
 
     //Track current time for timer.
-    let start = Date.now()
+    let start = inputTime + (1000 * 30) //Add 30s to account for the preGameTimer
     let seconds = 0
     let minutes = 0
     let displaySeconds = 0
     let displayMinutes = 6
+
+    // Calculate displayMinutes/Seconds early so refreshing looks smoother
+    let diff = Date.now() - start
+    let secondsInMS = diff % (1000 * 60 * 60) //Get the number of seconds in milliseconds
+    seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
+    minutes = Math.floor(seconds / 60)
+    
+    displayMinutes = 5 - minutes
+    displaySeconds = (60 - (seconds % 60)) % 60 //seconds is counting up, so have displayTime count down    
 
     //Begin with 30s countdown until game begins, then 6 minute timer.
     //Have <pr> display diff messages. Use functions.
@@ -432,7 +504,7 @@ const initializeGameTimer = () => {
         let secondsInMS = diff % (1000 * 60 * 60) //Get the number of seconds in milliseconds
         seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
         minutes = Math.floor(seconds / 60)
-        // console.log(minutes)
+        
         displayMinutes = 5 - minutes
         displaySeconds = (60 - (seconds % 60)) % 60 //seconds is counting up, so have displayTime count down      
 
@@ -441,7 +513,7 @@ const initializeGameTimer = () => {
 
         if(seconds > interval) {
             clearInterval(GameTimer)
-            acknowledgeGameEnd()
+            // acknowledgeGameEnd()
             // DEBUG_gameTimer()
             // acknowledgeGameEnd()
             // console.log('adsf')
@@ -450,10 +522,10 @@ const initializeGameTimer = () => {
 }
 
 //DEBUG: Displays when timer runs out.
-const DEBUG_gameTimer = () => {
-    document.getElementById("timer").innerHTML = "finished timer"
-    console.log("finished timer")
-}
+// const DEBUG_gameTimer = () => {
+//     document.getElementById("timer").innerHTML = "finished timer"
+//     console.log("finished timer")
+// }
 
 // const animateSort = (team_array) => {
 //     let rowTop = 0
@@ -479,6 +551,8 @@ const displayScore = () => {
     // Empty current scores.
     let redTable = ''
     let greenTable = ''
+    let redTotal = 0
+    let greenTotal = 0
     
     // Sort the scores in each array.
     RED_TEAM.sort(function(a,b) {
@@ -493,15 +567,60 @@ const displayScore = () => {
         let row = `<tr id="${element.username}"><td style="width:80%">${element.username}</td><td id="${element.username}Score">${element.score}</td></tr>`
         redTable += row
         element.$html = $(`${row}`)
+
+        redTotal+=parseInt(element.score)
     })
     GREEN_TEAM.forEach((element) => {
         let row = `<tr id="${element.username}"><td style="width:80%">${element.username}</td><td id="${element.username}Score">${element.score}</td></tr>`
         greenTable += row
         element.$html = $(`${row}`)
+
+        greenTotal+=parseInt(element.score)
     })
 
     scoreWindowRed.innerHTML = redTable
     scoreWindowGreen.innerHTML = greenTable
+
+    changeTotalScore(redTotal, greenTotal)
+}
+
+// The interval 
+let colorChange = null
+
+// Stores the total scores of both teams, then makes the higher score flash
+const changeTotalScore = async (redScore, greenScore) => {
+    // Stop interval
+    if (colorChange !== null) {
+        clearInterval(colorChange)
+    }
+
+    redTotal = document.getElementById('redHighscore')
+    greenTotal = document.getElementById('greenHighscore')
+
+    // Set both to default white font.
+    redTotal.style.color = 'white'
+    greenTotal.style.color = 'white'
+
+    redTotal.innerHTML = redScore
+    greenTotal.innerHTML = greenScore
+
+    // Make one of the scores start flashing
+    if (redScore > greenScore) {
+        colorChange = setInterval(function () {
+            redTotal.style.color = (redTotal.style.color == 'white' ? 'purple' : 'white')
+        }, 100); 
+    }
+    else if (redScore === greenScore) { //Make both flash
+        colorChange = setInterval(function () {
+            redTotal.style.color = (redTotal.style.color == 'white' ? 'purple' : 'white')
+            greenTotal.style.color = (greenTotal.style.color == 'white' ? 'purple' : 'white') 
+        }, 100); 
+    }
+    else {
+        colorChange = setInterval(function () {
+            greenTotal.style.color = (greenTotal.style.color == 'white' ? 'purple' : 'white') 
+        }, 100); 
+    }
 }
 
 // Takes the current team arrays, sorts them, and writes out their contents into the HTML element.
@@ -690,9 +809,9 @@ const postBaseEvent = (playerName) => {
 }
 
 // When backend sends game start permession
-const frontendGameStart = () => {
+const frontendGameStart = (backendTime) => {
     //Initialize the action screen
-    initializeActionScreen()
+    initializeActionScreen(backendTime)
 }
 
 // DEBUG: Fills arrays 
@@ -836,7 +955,7 @@ function handleEndGame(msgParts) {
 //start_game; <timestamp>
 function handleStartGame(msgParts) {
     let timestamp = Number(msgParts[1]);
-    frontendGameStart();
+    frontendGameStart(timestamp);
 }
 
 //request is what is wanted (like get_status)
@@ -929,16 +1048,6 @@ async function sendPlayerEntryById(equipmentID, playerID) {
     } else {
         /*name
         return result[1].trim();*/
-        //new part
-        // If successful, extract the returned Codename
-        const codename = result[1].trim();
-        // Find the corresponding Codename input and set its value
-        //const codenameInput = document.querySelector(`#editScreen input[type='text'][value='${equipmentID}'] + input[type='text']`);
-        const codenameInput = document.getElementById("codename-" + Number(equipmentID));
-        codenameInput.value = codename;
-        // Disable and style the Codename input
-        codenameInput.disabled = true;
-        codenameInput.style.backgroundColor = "white";
         return result[1].trim();
     }
 
@@ -972,7 +1081,7 @@ SOCKET.onopen = async () => {
             //waiting for start
             break;
         case "in_play":
-            frontendGameStart(/*status.start_time*/);
+            frontendGameStart(status.start_time);
             break;
         case "game_over":
             initializeEntryScreen();
