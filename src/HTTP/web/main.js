@@ -130,7 +130,6 @@ const initializeEntryScreen = function() {
                 
                 const rowIndexId = equipmentIdInput.id.substring(equipmentIdInput.className.length+1);
 
-                console.log(rowIndexId);
                 handleEnterPress(rowIndexId, playerId, equipmentId);
             }
         });
@@ -139,13 +138,45 @@ const initializeEntryScreen = function() {
 
 const handleEnterPress = async function (rowIndexId, playerId, equipmentId, team) {
     const codenameInput = document.getElementById("codename-" + Number(rowIndexId));
-    console.log(codenameInput);
+    const equipmentIDInput = document.getElementById("equipmentID-" + Number(rowIndexId));
+    const errorMsg = document.getElementById("errorMsg-" + rowIndexId);
+
+    console.log(rowIndexId);
+
+    if (equipmentIDInput.value == "") {
+        errorMsg.text = "EID can't be left blank!";
+        return;
+    } else if (playerId == "") {
+        errorMsg.text = "Player ID can't be left blank!";
+        return;
+    } else if (Number(playerId) == 0) {
+        errorMsg.text = "Player ID must be greater than 0!";
+        return;
+    } else if (!Number(playerId)) {
+        errorMsg.text = "Player ID must be a number!";
+        return;
+    } else if (Number(playerId) <= 0) {
+        errorMsg.text = "Player ID must be greater than 0!";
+        return;
+    } else if (Number(rowIndexId)%2 != Number(equipmentId)%2) {
+        if (Number(rowIndexId)%2 == 0) {
+            errorMsg.text = "Equipment ID must be even!";
+        } else {
+            errorMsg.text = "Equipment ID must be odd!";
+        }
+        return;
+    } else if (Number(equipmentId) == 43 || Number(equipmentId) == 53) {
+        errorMsg.text = "Equipment ID " + Number(equipmentId) + " is reserved for bases!";
+        return;
+    } else if (!codenameInput.disabled && codenameInput.value == "") {
+        errorMsg.text = "You must insert a Codename!";
+        return;
+    }
     if (codenameInput.disabled) {
         const playerIDInput = document.getElementById("playerID-" + Number(rowIndexId));
         playerIDInput.disabled = true;
         playerIDInput.style.backgroundColor = "white";
         
-        const equipmentIDInput = document.getElementById("equipmentID-" + Number(rowIndexId));
         equipmentIDInput.disabled = true;
         equipmentIDInput.style.backgroundColor = "white";
         try {
@@ -155,16 +186,20 @@ const handleEnterPress = async function (rowIndexId, playerId, equipmentId, team
             // Disable and style the Codename input
             codenameInput.disabled = true;
             codenameInput.style.backgroundColor = "white";
+
+            errorMsg.text = "";
         } catch (error) {
             // Handle error
             console.error(error);
             // Enable the Codename input associated with the failed entry
             enableCodenameInput(rowIndexId);
+            errorMsg.text = "Player ID isn't in the database, insert Codename";
             
         }
     } else {
         await sendPlayerEntryByName(Number(equipmentId), playerId, codenameInput.value);
         codenameInput.disabled = true;
+        errorMsg.text = "";
     }
 };
 
@@ -262,7 +297,14 @@ const createTeamDiv = function(teamName) {
             // Store reference to Codename input
             codenameInputs[i] = codenameInput;
 
+            const errorMsg = document.createElement("a");
+            errorMsg.text = "";
+            errorMsg.setAttribute("id", "errorMsg-" + i);
+            errorMsg.setAttribute("class", "errorMsg");
+            entryRow.appendChild(errorMsg);
+
             entriesDiv.appendChild(entryRow);
+
         }
     }
 
