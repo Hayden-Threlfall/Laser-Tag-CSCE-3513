@@ -14,6 +14,7 @@ import org.java_websocket.server.WebSocketServer;
 
 import DATABASE.Database;
 import SCORING.Scoring;
+import SCORING.Players.PlayerScore;
 import UDP.UDPSend;
 import SCORING.Players;
 
@@ -193,7 +194,8 @@ public class Sockets extends WebSocketServer{
         ArrayList<String> green = new ArrayList<>();
         ArrayList<String> red = new ArrayList<>();
 
-        for (int i = 1; i < 31; i++) {
+        
+        /*for (int i = 1; i < 31; i++) {
             if(players.getCodeName(i) != null) {
                 String entry = players.getCodeName(i) + ":" + Integer.toString(players.getScore(i))
                     + ":" + (players.getBase(i) ? "true" : "false");
@@ -203,6 +205,17 @@ public class Sockets extends WebSocketServer{
                 } else {
                     red.add(entry);
                 }
+            }
+        }*/
+
+        for (PlayerScore score : this.players.getAllScores()) {
+            String entry = score.codeName + ":" + Integer.toString(score.score)
+                + ":" + (score.capturedBase ? "true" : "false");
+            
+            if (score.isRedTeam) {
+                red.add(entry);
+            } else {
+                green.add(entry);
             }
         }
 

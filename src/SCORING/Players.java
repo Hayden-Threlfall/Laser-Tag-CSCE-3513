@@ -1,5 +1,7 @@
 package SCORING;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class Players{
 
@@ -64,6 +66,39 @@ public class Players{
 
     public boolean getBase(int equipmentID) {
         return players.get(equipmentID).base;
+    }
+
+    public class PlayerScore {
+        public boolean isRedTeam;
+        public String codeName;
+        public int score;
+        public boolean capturedBase;
+
+        public PlayerScore(boolean isRedTeam, String codeName, int score, boolean capturedBase) {
+            this.isRedTeam = isRedTeam;
+            this.codeName = codeName;
+            this.score = score;
+            this.capturedBase = capturedBase;
+        }
+    }
+
+    public PlayerScore[] getAllScores() {
+
+        /*ArrayList<PlayerScore> scores = new ArrayList<>();
+
+        for (Entry<Integer, Player> entry : this.players.entrySet()) {
+            scores.add(new PlayerScore(
+                entry.getKey()%2 == 1,
+                entry.getValue().codeName,
+                entry.getValue().score,
+                entry.getValue().base
+            ));
+        }*/
+        return this.players.entrySet()
+                .stream()
+                .map(entry -> new PlayerScore(entry.getKey()%2 == 1, entry.getValue().codeName, entry.getValue().score, entry.getValue().base))
+                .toArray(PlayerScore[]::new);
+        //return new PlayerScore[0];
     }
 
     public void clear() {

@@ -279,10 +279,10 @@ function startMusic(){
 }
 
 /* ACTION SCREEN */
-async function initializeActionScreen(backendTime) {
+async function initializeActionScreen() {
     let body = []
     body.push(`
-    <div id="timerParent" style="text-align:center; color:#fff; font-size:35px">
+    <div id="timerParent" style="text-align:center; color:#fff">
         <pr id="timer"></pr>
     </div>
     <br><br>
@@ -308,28 +308,6 @@ async function initializeActionScreen(backendTime) {
             </tbody>
         </table>
     </div>
-    <div style="text-align:center;overflow:hidden">
-        <table style="float:left; width:15%; left:15%; position:relative; background-color:red; color:#fff; border-spacing:0px; box-shadow:0 0 20px red; text-shadow:0 0 20px white; margin:20px">
-            <thead>
-                <tr><th>Overall Score</th></tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td id="redHighscore">0</td>
-                </tr>
-            </tbody>
-        </table>
-        <table style="float:right; width:15%; right:15%; position:relative; background-color:rgb(31,207,49); color:#fff; border-spacing:1px; box-shadow:0 0 20px rgb(31,207,49); text-shadow:0 0 20px white; margin:20px">
-            <thead>
-                <tr><th>Overall Score</th></tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td id="greenHighscore">0</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
     <br><br>
     <div style="margin:auto;text-align:center;">
         <select id="eventWindow" size="15" style="width:50%;"></select>
@@ -346,8 +324,6 @@ async function initializeActionScreen(backendTime) {
     eventWindow = document.getElementById("eventWindow")
     
     // Get the player names to store in the arrays
-    RED_TEAM = []
-    GREEN_TEAM = []
     playerNames = await getScores() //Returns a dict containins two dicts with usernames separated by team
     // console.log(playerNames)
     for (const [name, info] of Object.entries(playerNames['red_scores'])) {
@@ -378,7 +354,7 @@ async function initializeActionScreen(backendTime) {
     // updateScore("Hayden", 100)
     setTimeout(startMusic, 13000);
     // After 30 second timer, starts another one that calls acknowledgeGameEnd.
-    initializePreGameTimer(backendTime)
+    initializePreGameTimer()
     // DEBUG_CHANGE_SCORES()
     // DEBUG_FILL_EVENT()
     // let checkBase = setTimeout(() => {
@@ -388,25 +364,13 @@ async function initializeActionScreen(backendTime) {
 
 // Initializes the 30s pregame timer. After, calls initializeGameTimer.
 // Input is when the timer began
-const initializePreGameTimer = (backendTime) => {
-    // Check to see if frontend needs to skip to the game timer
-    if ((Date.now() - backendTime) > (1000*30)) {
-        initializeGameTimer(backendTime)
-        return
-    }
-    
+const initializePreGameTimer = (timePassed) => {
     let interval = 30
 
-    //Set the start time to be the backend start time.
-    let start = backendTime
+    //Track current time for timer.
+    let start = Date.now()
     let seconds = 0
     let displayTime = 30
-
-    // Calculating displayTime early makes it so refreshing frontend is smooth
-    let diff = Date.now() - start
-    let secondsInMS = diff % (1000 * 60) //Get the number of seconds in milliseconds
-    seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
-    displayTime = 30 - seconds //seconds is counting up, so have displayTime count down
 
     //Begin with 30s countdown until game begins, then 6 minute timer.
     //Have <pr> display diff messages. Use functions.
@@ -427,7 +391,7 @@ const initializePreGameTimer = (backendTime) => {
 
         if(seconds > interval) {
             clearInterval(preGameTimer)
-            initializeGameTimer(backendTime)
+            initializeGameTimer()
             // DEBUG_gameTimer()
             // acknowledgeGameEnd()
             // console.log('adsf')
@@ -441,24 +405,15 @@ const initializePreGameTimer = (backendTime) => {
 }
 
 // Creates 6 minute timer. After, calls acknowledgeGameEnd() to print the return to entry screen button.
-const initializeGameTimer = (inputTime) => {
+const initializeGameTimer = () => {
     let interval = 360
 
     //Track current time for timer.
-    let start = inputTime + (1000 * 30) //Add 30s to account for the preGameTimer
+    let start = Date.now()
     let seconds = 0
     let minutes = 0
     let displaySeconds = 0
     let displayMinutes = 6
-
-    // Calculate displayMinutes/Seconds early so refreshing looks smoother
-    let diff = Date.now() - start
-    let secondsInMS = diff % (1000 * 60 * 60) //Get the number of seconds in milliseconds
-    seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
-    minutes = Math.floor(seconds / 60)
-    
-    displayMinutes = 5 - minutes
-    displaySeconds = (60 - (seconds % 60)) % 60 //seconds is counting up, so have displayTime count down    
 
     //Begin with 30s countdown until game begins, then 6 minute timer.
     //Have <pr> display diff messages. Use functions.
@@ -477,7 +432,7 @@ const initializeGameTimer = (inputTime) => {
         let secondsInMS = diff % (1000 * 60 * 60) //Get the number of seconds in milliseconds
         seconds = Math.floor(secondsInMS / 1000) //Isolate number of seconds. Will be decimal, so must floor it.
         minutes = Math.floor(seconds / 60)
-        
+        // console.log(minutes)
         displayMinutes = 5 - minutes
         displaySeconds = (60 - (seconds % 60)) % 60 //seconds is counting up, so have displayTime count down      
 
@@ -486,7 +441,7 @@ const initializeGameTimer = (inputTime) => {
 
         if(seconds > interval) {
             clearInterval(GameTimer)
-            // acknowledgeGameEnd()
+            acknowledgeGameEnd()
             // DEBUG_gameTimer()
             // acknowledgeGameEnd()
             // console.log('adsf')
@@ -495,10 +450,10 @@ const initializeGameTimer = (inputTime) => {
 }
 
 //DEBUG: Displays when timer runs out.
-// const DEBUG_gameTimer = () => {
-//     document.getElementById("timer").innerHTML = "finished timer"
-//     console.log("finished timer")
-// }
+const DEBUG_gameTimer = () => {
+    document.getElementById("timer").innerHTML = "finished timer"
+    console.log("finished timer")
+}
 
 // const animateSort = (team_array) => {
 //     let rowTop = 0
@@ -524,8 +479,6 @@ const displayScore = () => {
     // Empty current scores.
     let redTable = ''
     let greenTable = ''
-    let redTotal = 0
-    let greenTotal = 0
     
     // Sort the scores in each array.
     RED_TEAM.sort(function(a,b) {
@@ -540,60 +493,15 @@ const displayScore = () => {
         let row = `<tr id="${element.username}"><td style="width:80%">${element.username}</td><td id="${element.username}Score">${element.score}</td></tr>`
         redTable += row
         element.$html = $(`${row}`)
-
-        redTotal+=parseInt(element.score)
     })
     GREEN_TEAM.forEach((element) => {
         let row = `<tr id="${element.username}"><td style="width:80%">${element.username}</td><td id="${element.username}Score">${element.score}</td></tr>`
         greenTable += row
         element.$html = $(`${row}`)
-
-        greenTotal+=parseInt(element.score)
     })
 
     scoreWindowRed.innerHTML = redTable
     scoreWindowGreen.innerHTML = greenTable
-
-    changeTotalScore(redTotal, greenTotal)
-}
-
-// The interval 
-let colorChange = null
-
-// Stores the total scores of both teams, then makes the higher score flash
-const changeTotalScore = async (redScore, greenScore) => {
-    // Stop interval
-    if (colorChange !== null) {
-        clearInterval(colorChange)
-    }
-
-    redTotal = document.getElementById('redHighscore')
-    greenTotal = document.getElementById('greenHighscore')
-
-    // Set both to default white font.
-    redTotal.style.color = 'white'
-    greenTotal.style.color = 'white'
-
-    redTotal.innerHTML = redScore
-    greenTotal.innerHTML = greenScore
-
-    // Make one of the scores start flashing
-    if (redScore > greenScore) {
-        colorChange = setInterval(function () {
-            redTotal.style.color = (redTotal.style.color == 'white' ? 'purple' : 'white')
-        }, 100); 
-    }
-    else if (redScore === greenScore) { //Make both flash
-        colorChange = setInterval(function () {
-            redTotal.style.color = (redTotal.style.color == 'white' ? 'purple' : 'white')
-            greenTotal.style.color = (greenTotal.style.color == 'white' ? 'purple' : 'white') 
-        }, 100); 
-    }
-    else {
-        colorChange = setInterval(function () {
-            greenTotal.style.color = (greenTotal.style.color == 'white' ? 'purple' : 'white') 
-        }, 100); 
-    }
 }
 
 // Takes the current team arrays, sorts them, and writes out their contents into the HTML element.
@@ -782,9 +690,9 @@ const postBaseEvent = (playerName) => {
 }
 
 // When backend sends game start permession
-const frontendGameStart = (backendTime) => {
+const frontendGameStart = () => {
     //Initialize the action screen
-    initializeActionScreen(backendTime)
+    initializeActionScreen()
 }
 
 // DEBUG: Fills arrays 
@@ -928,7 +836,7 @@ function handleEndGame(msgParts) {
 //start_game; <timestamp>
 function handleStartGame(msgParts) {
     let timestamp = Number(msgParts[1]);
-    frontendGameStart(timestamp);
+    frontendGameStart();
 }
 
 //request is what is wanted (like get_status)
@@ -1064,7 +972,7 @@ SOCKET.onopen = async () => {
             //waiting for start
             break;
         case "in_play":
-            frontendGameStart(status.start_time);
+            frontendGameStart(/*status.start_time*/);
             break;
         case "game_over":
             initializeEntryScreen();
