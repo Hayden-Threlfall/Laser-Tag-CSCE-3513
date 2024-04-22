@@ -33,19 +33,16 @@ public class Players{
     }
 
     public void setPlayer(long playerID, int equipmentID, String codeName) {
-        // players[equipmentID] = new Player(playerID, codeName);
         if(equipmentID != 43 && equipmentID != 53)
             players.put(equipmentID, new Player(playerID, codeName));
     }
 
     public void addScore(int equipmentID, int scoreToAdd) {
         players.get(equipmentID).score += scoreToAdd;
-        // players[equipmentID].score += scoreToAdd;
     }
 
     public void setBase(int equipmentID){
         players.get(equipmentID).base = true;
-        // players[equipmentID].base = true;
     }
 
 
@@ -83,22 +80,10 @@ public class Players{
     }
 
     public PlayerScore[] getAllScores() {
-
-        /*ArrayList<PlayerScore> scores = new ArrayList<>();
-
-        for (Entry<Integer, Player> entry : this.players.entrySet()) {
-            scores.add(new PlayerScore(
-                entry.getKey()%2 == 1,
-                entry.getValue().codeName,
-                entry.getValue().score,
-                entry.getValue().base
-            ));
-        }*/
         return this.players.entrySet()
                 .stream()
                 .map(entry -> new PlayerScore(entry.getKey()%2 == 1, entry.getValue().codeName, entry.getValue().score, entry.getValue().base))
                 .toArray(PlayerScore[]::new);
-        //return new PlayerScore[0];
     }
 
     public void clear() {

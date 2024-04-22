@@ -20,16 +20,6 @@ import SCORING.Players;
 
 
 public class Sockets extends WebSocketServer{
-    // private class PlayerInfo {
-    //     public final String codeName;
-    //     public final long playerID;
-    //     public PlayerInfo(String codeName, long playerID) {
-    //         this.codeName = codeName;
-    //         this.playerID = playerID;
-    //     }
-    // }
-
-    // private Scoring scores;
     private Players players;
     private Database database;
     private final Runnable gameStartMain;
@@ -42,42 +32,13 @@ public class Sockets extends WebSocketServer{
         ENDED
     }
     private GameState gameState = GameState.SETUP;
-    // private HashMap<Integer, PlayerInfo> players;
 
     public Sockets(int port, Scoring scores, Database database, Players players, Runnable gameStartMain, Runnable gameResetFunc) throws UnknownHostException {
         super(new InetSocketAddress(port));
-
         this.gameStartMain = gameStartMain;
         this.gameResetFunc = gameResetFunc;
-
-        //actual values
-        // this.scores = scores;
-        // players = new HashMap<>();
         this.players = players;
         this.database = database;
-
-
-        //testing values
-        /*scores = new Scoring();
-        players = new HashMap<>();
-
-        scores.players.put(0, 10);
-        players.put(0, new PlayerInfo("A", 1));
-
-        scores.players.put(1, 1092);
-        players.put(1, new PlayerInfo("B", 10));
-
-        scores.players.put(2, 92);
-        players.put(2, new PlayerInfo("C", 13));
-
-        scores.players.put(15, 53);
-        players.put(15, new PlayerInfo("D", 14));
-
-        scores.players.put(16, 84);
-        players.put(16, new PlayerInfo("E", 9));*/
-
-        
-        
     }
 
     HashSet<WebSocket> connections = new HashSet<>();
@@ -194,20 +155,6 @@ public class Sockets extends WebSocketServer{
         ArrayList<String> green = new ArrayList<>();
         ArrayList<String> red = new ArrayList<>();
 
-        
-        /*for (int i = 1; i < 31; i++) {
-            if(players.getCodeName(i) != null) {
-                String entry = players.getCodeName(i) + ":" + Integer.toString(players.getScore(i))
-                    + ":" + (players.getBase(i) ? "true" : "false");
-                //green
-                if (i % 2 == 0) {
-                    green.add(entry);
-                } else {
-                    red.add(entry);
-                }
-            }
-        }*/
-
         for (PlayerScore score : this.players.getAllScores()) {
             String entry = score.codeName + ":" + Integer.toString(score.score)
                 + ":" + (score.capturedBase ? "true" : "false");
@@ -225,7 +172,6 @@ public class Sockets extends WebSocketServer{
         Date now = new Date();
 
         this.sendResponse(socket, message[1], now.getTime() + "; GREEN; " + greenString + "; RED; " + redString);
-        //socket.send("response; " + message[1] + "; " + );
     }
 
     //add_player_id; <request_id>; <equipmentID>; <playerID>
@@ -237,16 +183,9 @@ public class Sockets extends WebSocketServer{
 
         String codeName = database.searchPlayer(playerID);
 
-
-        //System.out.println("Found id: " + name);
-        
-        //this.sendResponse(socket, message[1], "fail; not setup yet");
-
         if (codeName == "NOT FOUND") {
             this.sendResponse(socket, message[1], "fail; missing_id");
         } else {
-            // this.scores.players.put(equipmentID, 0);
-            // this.players.put(equipmentID, new PlayerInfo(codeName, playerID));
             this.players.setPlayer(playerID, equipmentID, codeName);
 
             UDPSend.send(Integer.toString(equipmentID));
@@ -266,11 +205,6 @@ public class Sockets extends WebSocketServer{
 
         database.addPlayer(playerID, codeName);
         
-        //System.out.println("added player: " + id);
-        //this.sendResponse(socket, message[1], "fail; not setup yet");
-
-        // this.scores.players.put(equipmentID, 0);
-        // this.players.put(equipmentID, new PlayerInfo(playerName, playerID));
         this.players.setPlayer(playerID,equipmentID, codeName);
 
         UDPSend.send(Integer.toString(equipmentID));

@@ -73,7 +73,6 @@ public class Scoring {
                     Players.setBase(player1);
 
                     UDPSend.send(String.valueOf(53));
-                    //System.out.println(players.get(player1)); //test code
                 break;
 
                 default: //one player has hit another
