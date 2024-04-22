@@ -427,14 +427,14 @@ async function initializeActionScreen(backendTime) {
         //     score: score,
         //     base_captured: base_captured
         // };
-        if (info.base_captured === 'true')
-            name = "{B} " + name
-        RED_TEAM.push({'username':name, 'score':info.score})
+        /*if (info.base_captured === 'true')
+            name = "{B} " + name*/
+        RED_TEAM.push({'username':name, 'score':info.score, 'base':info.base_captured})
     }
     for (const [name, info] of Object.entries(playerNames['green_scores'])) {
-        if (info.base_captured === 'true')
-            name = "{B} " + name
-        GREEN_TEAM.push({'username':name, 'score':info.score})
+        /*if (info.base_captured === 'true')
+            name = "{B} " + name*/
+        GREEN_TEAM.push({'username':name, 'score':info.score, 'base':info.base_captured})
     }
     // playerNames['red_scores'].forEach(user => {
     //     // user is a dict. Each key is a username and each value is a score.
@@ -609,14 +609,22 @@ const displayScore = () => {
 
     // Iterate through each sorted array, writing their contents to the HTLM selects.
     RED_TEAM.forEach((element) => {
-        let row = `<tr id="${element.username}"><td style="width:80%">${element.username}</td><td id="${element.username}Score">${element.score}</td></tr>`
+        let text_name = element.username;
+        if (element.base) {
+            text_name = "[ℬ] " + text_name;
+        }
+        let row = `<tr id="${element.username}"><td style="width:80%">${text_name}</td><td id="${element.username}Score">${element.score}</td></tr>`
         redTable += row
         element.$html = $(`${row}`)
 
         redTotal+=parseInt(element.score)
     })
     GREEN_TEAM.forEach((element) => {
-        let row = `<tr id="${element.username}"><td style="width:80%">${element.username}</td><td id="${element.username}Score">${element.score}</td></tr>`
+        let text_name = element.username;
+        if (element.base) {
+            text_name = "[ℬ] " + text_name;
+        }
+        let row = `<tr id="${element.username}"><td style="width:80%">${text_name}</td><td id="${element.username}Score">${element.score}</td></tr>`
         greenTable += row
         element.$html = $(`${row}`)
 
@@ -779,15 +787,17 @@ const acknowledgeBaseCapture = (username, newScore) => {
     // Find the player and modify their username with the base change.
     RED_TEAM.forEach((element) => {
         if (element.username == username) {
-            let newUsername = "[ℬ] " + element.username
-            element.username = newUsername
+            /*let newUsername = "[ℬ] " + element.username
+            element.username = newUsername*/
+            element.base = true;
             element.score = newScore
         }
     })
     GREEN_TEAM.forEach((element) => {
         if (element.username == username) {
-            let newUsername = "[ℬ] " + element.username
-            element.username = newUsername
+            /*let newUsername = "[ℬ] " + element.username
+            element.username = newUsername*/
+            element.base = true;
             element.score = newScore
         }
     })
