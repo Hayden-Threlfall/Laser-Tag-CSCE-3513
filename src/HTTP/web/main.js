@@ -127,27 +127,44 @@ const initializeEntryScreen = function() {
                 // Determine the row index based on the row label and team color
                 //const rowIndexLabel = entryRow.querySelector("div:first-child"); // Select the first child (label) of the entry row
                 //const rowIndexId = rowIndexLabel.value.padStart(2, '0'); // Extract the equipment ID from the label
+                let codeNameInput
+                let playerIDList = []
+                let equipmentIDList = []
+                //go through and get all currently entered code names
+                for(i = 1; i < 30; i++) {
+                    codeNameInput = document.getElementById("codename-" + Number(i))
+                    if(codeNameInput.disabled && codeNameInput.style.backgroundColor === "white") {
+                        equipmentIDList.push(document.getElementById("equipmentID-" + Number(i)).value)
+                        playerIDList.push(document.getElementById("playerID-" + Number(i)).value)
+                    }
+                    
+                }
                 
                 const rowIndexId = equipmentIdInput.id.substring(equipmentIdInput.className.length+1);
 
-                handleEnterPress(rowIndexId, playerId, equipmentId);
+                handleEnterPress(rowIndexId, playerId, equipmentId, equipmentIDList, playerIDList);
             }
         });
     });
 };
 
-const handleEnterPress = async function (rowIndexId, playerId, equipmentId, team) {
+const handleEnterPress = async function (rowIndexId, playerId, equipmentId, equipmentIDList, playerIDList) {
     const codenameInput = document.getElementById("codename-" + Number(rowIndexId));
     const equipmentIDInput = document.getElementById("equipmentID-" + Number(rowIndexId));
     const errorMsg = document.getElementById("errorMsg-" + rowIndexId);
-
-    //console.log(rowIndexId);
+    errorMsg.style.color = "white";
 
     if (equipmentIDInput.value == "") {
-        errorMsg.text = "EID can't be left blank!";
+        errorMsg.text = "Equipment ID can't be left blank!";
         return;
     } else if (playerId == "") {
         errorMsg.text = "Player ID can't be left blank!";
+        return;
+    } else if (equipmentIDList.includes(equipmentId)) {
+        errorMsg.text = "Select a unique Equipment ID!";
+        return;
+    } else if (playerIDList.includes(playerId)){
+        errorMsg.text = "Select a unique player ID!";
         return;
     } else if (Number(playerId) == 0) {
         errorMsg.text = "Player ID must be greater than 0!";
@@ -193,7 +210,7 @@ const handleEnterPress = async function (rowIndexId, playerId, equipmentId, team
             console.error(error);
             // Enable the Codename input associated with the failed entry
             enableCodenameInput(rowIndexId);
-            errorMsg.text = "Player ID isn't in the database, insert Codename";
+            errorMsg.text = "Player ID not in database, insert Codename";
             
         }
     } else {
@@ -238,10 +255,10 @@ const createTeamDiv = function(teamName) {
     labelsRow.style.marginTop = "5px";
     labelsRow.style.color = "white"; // Set text color to white
 
-    const labels = ["EID", "Player ID", "Codename"];
+    const labels = ["Equipment ID", "Player ID", "Codename"];
     //const flexValues = ["0.34", "0.34", "0.3"]; // Adjust flex values here for different spacing
 
-    const rightPadding = ["155px", "118px", "0px"];
+    const rightPadding = ["92px", "118px", "0px"];
 
     labels.forEach((labelText, index) => {
         const label = document.createElement("div");
@@ -421,7 +438,6 @@ async function initializeActionScreen(backendTime) {
     RED_TEAM = []
     GREEN_TEAM = []
     playerNames = await getScores() //Returns a dict containins two dicts with usernames separated by team
-    // console.log(playerNames)
     for (const [name, info] of Object.entries(playerNames['red_scores'])) {
         //green_scores[name] = {
         //     score: score,
