@@ -38,7 +38,10 @@ public class Players{
     }
 
     public void addScore(int equipmentID, int scoreToAdd) {
-        players.get(equipmentID).score += scoreToAdd;
+        Player player = players.get(equipmentID);
+        if (player == null) return;
+        player.score += scoreToAdd;
+        // players[equipmentID].score += scoreToAdd;
     }
 
     public void setBase(int equipmentID){
